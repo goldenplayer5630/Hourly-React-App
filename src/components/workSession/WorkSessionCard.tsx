@@ -2,7 +2,11 @@ import React from 'react';
 import { WorkSessionResponse } from '../../classes/WorkSessionResponse';
 
 type Props = {
-  session: WorkSessionResponse;
+  taskDescription: string;
+  startTime: string;
+  endTime: string;
+  wbso: boolean;
+  factor: number;
 };
 
 const formatDate = (date: string) =>
@@ -11,25 +15,20 @@ const formatDate = (date: string) =>
     timeStyle: 'short',
   });
 
-const WorkSessionCard: React.FC<Props> = ({ session }) => {
+const WorkSessionCard: React.FC<Props> = ({ taskDescription, startTime, endTime, wbso, factor }) => {
   return (
     <div className="border rounded-xl shadow-md p-4 mb-4 bg-white">
       <h2 className="text-lg font-semibold mb-1">
-        {session.taskDescription}
+        {taskDescription}
       </h2>
       <p className="text-sm text-gray-600 mb-1">
-        <strong>Time:</strong> {formatDate(session.startTime)} – {formatDate(session.endTime)}
+        <strong>Time:</strong> {formatDate(startTime)} – {formatDate(endTime)}
       </p>
       <p className="text-sm mb-1">
-        <strong>Factor:</strong> {session.factor}
+        <strong>Factor:</strong> {factor}
       </p>
-      {session.wbso && (
+      {wbso && (
         <p className="text-sm text-blue-600 font-semibold">WBSO Registered</p>
-      )}
-      {session.otherRemarks && (
-        <p className="text-sm italic text-gray-700 mt-2">
-          <strong>Remarks:</strong> {session.otherRemarks}
-        </p>
       )}
     </div>
   );

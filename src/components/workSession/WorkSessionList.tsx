@@ -10,11 +10,7 @@ const WorkSessionList: React.FC<Props> = ({ sessions }) => {
   if (!sessions.length) return <p>No sessions available.</p>;
 
   return (
-    <div className="grid gap-4">
-      {sessions.map((session) => (
-        <WorkSessionCard key={session.id} session={session} />
-      ))}
-    </div>
+    <h1>tyf op</h1>
   );
 };
 

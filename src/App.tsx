@@ -1,22 +1,19 @@
-import './App.css';
-import React, { useEffect, useState } from 'react';
-import WorkSessionList from './components/workSession/WorkSessionList';
-import { WorkSessionResponse } from './classes/WorkSessionResponse';
+// src/App.tsx
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import WorkSessionPage from './pages/WorkSessionPage';
 
 const App: React.FC = () => {
-  const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
-
-  useEffect(() => {
-    fetch('https://localhost:7280/api/worksession')
-      .then(res => res.json())
-      .then(data => setSessions(data))
-      .catch(err => console.error('Error fetching work sessions:', err));
-  }, []);
-
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Work Sessions</h1>
-      <WorkSessionList sessions={sessions} />
+      <nav className="mb-6 flex gap-4">
+        <Link to="/" className="text-blue-600 hover:underline">Home</Link>
+        <Link to="/work-sessions" className="text-blue-600 hover:underline">Work Sessions</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/work-sessions" element={<WorkSessionPage />} />
+      </Routes>
     </div>
   );
 };
