@@ -14,7 +14,7 @@ const WorkSessionPage = () => {
     <div>
       <h1>All Sessions</h1>
       {sessions.map((s) => (
-        <WorkSessionCard startTime={s.startTime} endTime={s.endTime} taskDescription={s.taskDescription} wbso={s.wbso} factor={s.factor}></WorkSessionCard>
+        <WorkSessionCard session={s}></WorkSessionCard>
       ))}
     </div>
   );

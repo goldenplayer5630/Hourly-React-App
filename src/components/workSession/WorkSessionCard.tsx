@@ -1,12 +1,17 @@
 import React from 'react';
 import { WorkSessionResponse } from '../../classes/WorkSessionResponse';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Grid,
+  Chip,
+  Tooltip,
+} from '@mui/material';
 
 type Props = {
-  taskDescription: string;
-  startTime: string;
-  endTime: string;
-  wbso: boolean;
-  factor: number;
+  session: WorkSessionResponse;
 };
 
 const formatDate = (date: string) =>
@@ -15,22 +20,70 @@ const formatDate = (date: string) =>
     timeStyle: 'short',
   });
 
-const WorkSessionCard: React.FC<Props> = ({ taskDescription, startTime, endTime, wbso, factor }) => {
+const truncate = (text: string, maxLength: number) =>
+  text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
+
+const WorkSessionCard: React.FC<Props> = ({ session }) => {
+  const {
+    taskDescription,
+    startTime,
+    endTime,
+    factor,
+    wbso,
+    otherRemarks,
+    user,
+    createdAt,
+    updatedAt,
+  } = session;
+
   return (
-    <div className="border rounded-xl shadow-md p-4 mb-4 bg-white">
-      <h2 className="text-lg font-semibold mb-1">
-        {taskDescription}
-      </h2>
-      <p className="text-sm text-gray-600 mb-1">
-        <strong>Time:</strong> {formatDate(startTime)} – {formatDate(endTime)}
-      </p>
-      <p className="text-sm mb-1">
-        <strong>Factor:</strong> {factor}
-      </p>
-      {wbso && (
-        <p className="text-sm text-blue-600 font-semibold">WBSO Registered</p>
-      )}
-    </div>
+    <Card variant="outlined" sx={{ mb: 2 }}>
+      <CardContent>
+        <Grid container spacing={2} alignItems="center">
+          {/* Time */}
+          <Grid size={2}>
+            <Typography variant="body2" color="text.secondary">
+              {formatDate(startTime)} – {formatDate(endTime)}
+            </Typography>
+          </Grid>
+
+          {/* Task */}
+          <Grid size={4}>
+            <Tooltip title={taskDescription}>
+              <Typography variant="body1" noWrap>
+                {truncate(taskDescription, 50)}
+              </Typography>
+            </Tooltip>
+          </Grid>
+
+          {/* Factor */}
+          <Grid size={1}>
+            <Typography variant="body2">x{factor.toFixed(2)}</Typography>
+          </Grid>
+
+          {/* WBSO */}
+          <Grid size={2}>
+            {wbso && <Chip label="WBSO" color="primary" size="small" />}
+          </Grid>
+
+          {/* User */}
+          <Grid size={2}>
+            <Typography variant="body2" color="text.secondary">
+              {/* {user?.name ?? 'Unknown'} */}
+            </Typography>
+          </Grid>
+        </Grid>
+
+        {/* Remarks (Optional below row) */}
+        {otherRemarks && (
+          <Box mt={1}>
+            <Typography variant="caption" color="text.secondary">
+              {otherRemarks}
+            </Typography>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
