@@ -10,7 +10,12 @@ const WorkSessionList: React.FC<Props> = ({ sessions }) => {
   if (!sessions.length) return <p>No sessions available.</p>;
 
   return (
-    <h1>tyf op</h1>
+    <div>
+      <h1>All Sessions</h1>
+      {sessions.map((s) => (
+        <WorkSessionCard session={s}></WorkSessionCard>
+      ))}
+    </div>
   );
 };
 

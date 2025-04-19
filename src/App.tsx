@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import WorkSessionPage from './pages/WorkSessionPage';
+import DefaultLayout from './layouts/DefaultLayout';
 
 const App: React.FC = () => {
   return (
@@ -12,8 +13,10 @@ const App: React.FC = () => {
       </nav>
 
       <Routes>
+      <Route element={<DefaultLayout />}>
         <Route path="/work-sessions" element={<WorkSessionPage />} />
-      </Routes>
+      </Route>
+    </Routes>
     </div>
   );
 };
