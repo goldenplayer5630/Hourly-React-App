@@ -9,6 +9,25 @@ export const workSessionService = {
     return res.json();
   },
 
+  filter: async (
+    userId?: string,
+    year?: number,
+    month?: number,
+    wbso?: boolean
+  ): Promise<WorkSessionResponse[]> => {
+    const params = new URLSearchParams();
+  
+    if (userId) params.append('userId', userId);
+    if (year !== undefined) params.append('year', year.toString());
+    if (month !== undefined) params.append('month', month.toString());
+    if (wbso !== undefined) params.append('wbso', wbso.toString());
+  
+    const res = await fetch(`${API_BASE}/Filter?${params.toString()}`);
+    console.log(`${API_BASE}/Filter?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to filter work sessions');
+    return res.json();
+  },  
+
   getById: async (id: string): Promise<WorkSessionResponse> => {
     const res = await fetch(`${API_BASE}/${id}`);
     if (!res.ok) throw new Error(`Work session ${id} not found`);

@@ -10,10 +10,8 @@ import {
   Tooltip,
 } from '@mui/material';
 import { 
-  Start,
   Edit,
   Delete,
-  PanoramaFishEye,
   RemoveRedEye, 
 } from '@mui/icons-material';
 
@@ -27,14 +25,12 @@ const formatDate = (date: string) =>
     timeStyle: 'short',
   });
 
-const formatDuration = (start: string, end: string, factor: number) => {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  const duration = (endDate.getTime() - startDate.getTime()) * factor;
-  const hours = Math.floor(duration / (1000 * 60 * 60));
-  const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
-  return `${hours}h ${minutes}m`;
-}
+const formatDuration = (hoursFloat: number) => {
+  const totalMinutes = Math.round(hoursFloat * 60);
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  return `${h}h ${m}m`;
+};
 
 const truncate = (text: string, maxLength: number) =>
   text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
@@ -47,6 +43,7 @@ const WorkSessionCard: React.FC<Props> = ({ session }) => {
     factor,
     wbso,
     otherRemarks,
+    duration,
     user,
     createdAt,
     updatedAt,
@@ -91,7 +88,7 @@ const WorkSessionCard: React.FC<Props> = ({ session }) => {
               {"Duration:"}
             </Typography>
             <Typography variant="h6" color="text.black">
-              {formatDuration(startTime, endTime, factor)}
+              {formatDuration(duration)}
             </Typography>
           </Grid>
 
@@ -118,7 +115,7 @@ const WorkSessionCard: React.FC<Props> = ({ session }) => {
                 {"Other remarks:"}
               </Typography>
               <Typography variant="caption" color="text.black">
-                {truncate(otherRemarks, 220)}
+                {truncate(otherRemarks, 200)}
               </Typography>
             </Box>
             )}

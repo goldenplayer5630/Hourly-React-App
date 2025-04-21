@@ -11,7 +11,6 @@ const WorkSessionList: React.FC<Props> = ({ sessions }) => {
 
   return (
     <div>
-      <h1>All Sessions</h1>
       {sessions.map((s) => (
         <WorkSessionCard session={s}></WorkSessionCard>
       ))}

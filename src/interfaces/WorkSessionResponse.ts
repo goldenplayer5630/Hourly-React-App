@@ -9,9 +9,10 @@ export interface WorkSessionResponse {
   user?: UserResponse;
 
   taskDescription: string;
-  startTime: string;     // ISO string from API (can be parsed into Date in JS)
+  startTime: string;
   endTime: string;
   factor: number;
+  duration: number;
 
   wbso: boolean;
   otherRemarks?: string;
