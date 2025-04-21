@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorkSessionResponse } from '../../classes/WorkSessionResponse';
+import { WorkSessionResponse } from '../../interfaces/WorkSessionResponse';
 import {
   Card,
   CardContent,
@@ -9,6 +9,13 @@ import {
   Chip,
   Tooltip,
 } from '@mui/material';
+import { 
+  Start,
+  Edit,
+  Delete,
+  PanoramaFishEye,
+  RemoveRedEye, 
+} from '@mui/icons-material';
 
 type Props = {
   session: WorkSessionResponse;
@@ -19,6 +26,15 @@ const formatDate = (date: string) =>
     dateStyle: 'medium',
     timeStyle: 'short',
   });
+
+const formatDuration = (start: string, end: string, factor: number) => {
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const duration = (endDate.getTime() - startDate.getTime()) * factor;
+  const hours = Math.floor(duration / (1000 * 60 * 60));
+  const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+}
 
 const truncate = (text: string, maxLength: number) =>
   text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
@@ -39,49 +55,90 @@ const WorkSessionCard: React.FC<Props> = ({ session }) => {
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
           {/* Time */}
           <Grid size={2}>
-            <Typography variant="body2" color="text.secondary">
-              {formatDate(startTime)} – {formatDate(endTime)}
+            <Typography variant="subtitle2" color="text.secondary">
+              {"Start:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatDate(startTime)}
             </Typography>
           </Grid>
 
-          {/* Task */}
-          <Grid size={4}>
-            <Tooltip title={taskDescription}>
-              <Typography variant="body1" noWrap>
-                {truncate(taskDescription, 50)}
-              </Typography>
-            </Tooltip>
+          <Grid size={2}>
+          < Typography variant="subtitle2" color="text.secondary">
+              {"End:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatDate(endTime)}
+            </Typography>
           </Grid>
 
           {/* Factor */}
           <Grid size={1}>
-            <Typography variant="body2">x{factor.toFixed(2)}</Typography>
+            < Typography variant="subtitle2" color="text.secondary">
+                {"Factor:"}
+              </Typography>
+              <Typography variant="h6" color="text.black">
+                x{factor.toFixed(2)}
+              </Typography>
+          </Grid>
+
+          {/* Duration */}
+          <Grid size={1}>
+          < Typography variant="subtitle2" color="text.secondary">
+              {"Duration:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatDuration(startTime, endTime, factor)}
+            </Typography>
           </Grid>
 
           {/* WBSO */}
-          <Grid size={2}>
-            {wbso && <Chip label="WBSO" color="primary" size="small" />}
+          <Grid size={1}>
+            {wbso && <Chip label="WBSO" color="secondary" size="small" />}
           </Grid>
 
-          {/* User */}
-          <Grid size={2}>
-            <Typography variant="body2" color="text.secondary">
-              {/* {user?.name ?? 'Unknown'} */}
-            </Typography>
+          {/* Task */}
+          <Grid size={5}>
+            <Tooltip title={taskDescription}>
+              <Typography variant="body1">
+                {truncate(taskDescription, 150)}
+              </Typography>
+            </Tooltip>
           </Grid>
         </Grid>
 
-        {/* Remarks (Optional below row) */}
-        {otherRemarks && (
-          <Box mt={1}>
-            <Typography variant="caption" color="text.secondary">
-              {otherRemarks}
-            </Typography>
-          </Box>
-        )}
+        <Grid container spacing={2} alignItems="center">
+          <Grid size={10}>
+            {otherRemarks && (
+            <Box>
+              < Typography variant="subtitle2" color="text.secondary">
+                {"Other remarks:"}
+              </Typography>
+              <Typography variant="caption" color="text.black">
+                {truncate(otherRemarks, 220)}
+              </Typography>
+            </Box>
+            )}
+          </Grid>
+
+          <Grid size={2}>
+            <Box display="flex" justifyContent="flex-end" gap={1}>
+                <Tooltip title="View">
+                  <RemoveRedEye />
+                </Tooltip>
+                <Tooltip title="Edit">
+                  <Edit />
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <Delete />
+              </Tooltip>
+            </Box>
+          </Grid>
+        </Grid>
+
       </CardContent>
     </Card>
   );

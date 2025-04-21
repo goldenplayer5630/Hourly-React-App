@@ -5,10 +5,10 @@ const theme = createTheme({
   palette: {
     mode: 'light', // or 'dark'
     primary: {
-      main: '#1976d2', // your brand blue
+      main: '#0E1C36', // your brand blue
     },
     secondary: {
-      main: '#9c27b0', // optional secondary
+      main: '#AFCBFF', // optional secondary
     },
     background: {
       default: '#f9f9f9',

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { workSessionService } from '../services/WorkSessionService';
-import { WorkSessionResponse } from '../classes/WorkSessionResponse';
+import { WorkSessionResponse } from '../interfaces/WorkSessionResponse';
 import WorkSessionCard from '../components/workSession/WorkSessionCard';
 
 const WorkSessionPage = () => {
@@ -12,7 +12,7 @@ const WorkSessionPage = () => {
 
   return (
     <div>
-      <h1>All Sessions</h1>
+      <h1>Work Sessions</h1>
       {sessions.map((s) => (
         <WorkSessionCard session={s}></WorkSessionCard>
       ))}

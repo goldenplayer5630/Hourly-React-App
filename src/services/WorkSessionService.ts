@@ -1,4 +1,4 @@
-import { WorkSessionResponse } from '../classes/WorkSessionResponse';
+import { WorkSessionResponse } from '../interfaces/WorkSessionResponse';
 
 const API_BASE = 'https://localhost:7280/api/WorkSession';
 

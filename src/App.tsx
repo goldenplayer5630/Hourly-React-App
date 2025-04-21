@@ -3,6 +3,10 @@ import React from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import WorkSessionPage from './pages/WorkSessionPage';
 import DefaultLayout from './layouts/DefaultLayout';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
+import GitProjectPage from './pages/GitProjectPage';
+import SettingsPage from './pages/SettingsPage';
 
 const App: React.FC = () => {
   return (
@@ -14,7 +18,11 @@ const App: React.FC = () => {
 
       <Routes>
       <Route element={<DefaultLayout />}>
+        <Route path="/" element={<DashboardPage/>} />
+        <Route path="/git-projects" element={<GitProjectPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/work-sessions" element={<WorkSessionPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
     </Routes>
     </div>

@@ -1,20 +1,25 @@
 // src/layouts/DefaultLayout.tsx
 
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+import TopBar from '../components/TopBar/TopBar';
 import {
-  AppBar,
   Box,
   CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Toolbar,
-  Typography,
 } from '@mui/material';
+import SideBar from '../components/SideBar/SideBar';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import TimerIcon from '@mui/icons-material/Timer';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { NavItem } from '../classes/NavItem';
 
-const drawerWidth = 240;
+const navItems = [
+  new NavItem('Dashboard', '/', <DashboardIcon />),
+  new NavItem('Work Sessions', '/work-sessions', <TimerIcon />),
+  new NavItem('Git Projects', '/git-projects', <GitHubIcon />),
+  new NavItem('Settings', '/settings', <SettingsIcon />),
+];
 
 const DefaultLayout: React.FC = () => {
   return (
@@ -22,41 +27,14 @@ const DefaultLayout: React.FC = () => {
       <CssBaseline />
 
       {/* App Bar */}
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <Typography variant="h6" noWrap>
-            Hourly Dashboard
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <TopBar />
 
       {/* Sidebar */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
-          <List>
-            <ListItem component={Link} to="/">
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem component={Link} to="/work-sessions">
-              <ListItemText primary="Work Sessions" />
-            </ListItem>
-            {/* Add more navigation items here */}
-          </List>
-        </Box>
-      </Drawer>
+      <SideBar navItems={navItems} />
 
       {/* Page Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
-        <Outlet /> {/* Your routed page goes here */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 2 }}>
+        <Outlet />
       </Box>
     </Box>
   );
