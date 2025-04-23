@@ -3,32 +3,40 @@ import { workSessionService } from '../services/WorkSessionService';
 import { WorkSessionResponse } from '../interfaces/WorkSessionResponse';
 import WorkSessionList from '../components/workSession/WorkSessionList';
 import WorkSessionHeader from '../components/workSession/WorkSessionHeader';
+import { userService } from '../services/UserService';
+import { UserResponse } from '../interfaces/UserResponse';
 
 const WorkSessionPage = () => {
   const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string>('1'); // default user ID
+  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [selectedUser, setSelectedUser] = useState<string>('1');
   const [selectedMonth, setSelectedMonth] = useState<string>(
     String(new Date().getMonth() + 1).padStart(2, '0')
   );
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear()); // default 2025
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [wbsoOnly, setWbsoOnly] = useState<boolean>(false);
 
   const getAvailableYears = () => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 7 }, (_, i) => currentYear - i);
-  }
+  };
 
   const handleAddWorkSession = () => {
     // Open a dialog or redirect to a form
   };
 
   useEffect(() => {
+    userService.getAll()
+      .then(setUsers)
+      .catch((err) => console.error('Error fetching users:', err));
+  }, []);
+
+  useEffect(() => {
     workSessionService
-      .filter(undefined, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
+      .filter(selectedUser, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
       .then(setSessions)
       .catch(console.error);
   }, [selectedUser, selectedYear, selectedMonth, wbsoOnly]);
-  
 
   return (
     <div>
@@ -43,10 +51,10 @@ const WorkSessionPage = () => {
         wbsoOnly={wbsoOnly}
         onToggleWBSO={() => setWbsoOnly((prev) => !prev)}
         onAddWorkSession={handleAddWorkSession}
-        users={[{ id: '1', name: 'Alice' }, { id: '2', name: 'Bob' }]}
-        availableYears={getAvailableYears()} // current years,
+        users={users}
+        availableYears={getAvailableYears()}
       />
-      <WorkSessionList sessions={sessions}/>
+      <WorkSessionList sessions={sessions} />
     </div>
   );
 };

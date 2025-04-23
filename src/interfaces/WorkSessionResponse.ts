@@ -6,7 +6,7 @@ import { UserResponse } from './UserResponse';
 export interface WorkSessionResponse {
   id: string;
   userId: string;
-  user?: UserResponse;
+  user?: UserResponse | null;
 
   taskDescription: string;
   startTime: string;
@@ -14,11 +14,11 @@ export interface WorkSessionResponse {
   factor: number;
   duration: number;
 
-  wbso: boolean;
-  otherRemarks?: string;
+  wbso?: boolean | null;
+  otherRemarks?: string | null;
 
   gitCommits: GitCommitResponse[];
 
   createdAt: string;
-  updatedAt?: string;
+  updatedAt?: string | null;
 }

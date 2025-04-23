@@ -1,17 +1,20 @@
-export interface GitCommitResponse {
-    id: string;
-    userId: string;
-  
-    taskDescription: string;
-    startTime: string;     // ISO string from API (can be parsed into Date in JS)
-    endTime: string;
-    factor: number;
-  
-    wbso: boolean;
-    otherRemarks?: string;
+import { UserResponse } from './UserResponse';
+import { GitRepository } from './GitRepositoryResponse';
+import { WorkSessionResponse } from './WorkSessionResponse';
 
-  
-    createdAt: string;
-    updatedAt?: string;
-  }
-  
+export interface GitCommitResponse {
+  id: string;
+  repositoryId: string;
+  extCommitId: string;
+  extCommitShortId: string;
+  title: string;
+  comment?: string | null;
+  authorId: string;
+  webUrl: string;
+  createdAt: string;
+  updatedAt?: string | null;
+
+  author: UserResponse | null;
+  repository: GitCommitResponse | null;
+  workSessions: WorkSessionResponse[];
+}

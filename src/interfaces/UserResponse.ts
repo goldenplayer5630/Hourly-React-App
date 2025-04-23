@@ -1,17 +1,27 @@
-export interface UserResponse {
-    id: string;
-    userId: string;
-  
-    taskDescription: string;
-    startTime: string;     // ISO string from API (can be parsed into Date in JS)
-    endTime: string;
-    factor: number;
-  
-    wbso: boolean;
-    otherRemarks?: string;
+import { RoleResponse } from './RoleResponse';
+import { DepartmentResponse } from './DepartmentResponse';
+import { WorkSessionResponse } from './WorkSessionResponse';
+import { GitCommitResponse } from './GitCommitResponse';
 
-  
-    createdAt: string;
-    updatedAt?: string;
-  }
-  
+export interface UserResponse {
+  id: string;
+
+  name: string;
+  email: string;
+
+  roleId?: string | null;
+  role?: RoleResponse | null;
+
+  departmentId?: string | null;
+  department?: DepartmentResponse | null;
+
+  gitEmail?: string | null;
+  gitUsername?: string | null;
+  gitAccessToken?: string | null;
+
+  createdAt: string;
+  updatedAt?: string | null;
+
+  workSessions: WorkSessionResponse[];
+  gitCommits: GitCommitResponse[];
+}

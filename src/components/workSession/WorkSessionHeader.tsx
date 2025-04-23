@@ -10,8 +10,11 @@ import {
     InputLabel,
     Switch,
     FormControlLabel,
+    Autocomplete,
+    TextField
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { UserResponse } from '../../interfaces/UserResponse';
 
 type Props = {
     selectedUser: string;
@@ -23,7 +26,7 @@ type Props = {
     wbsoOnly: boolean;
     onToggleWBSO: () => void;
     onAddWorkSession: () => void;
-    users: { id: string; name: string }[];
+    users: UserResponse[];
     availableYears: number[];
 };
 
@@ -62,19 +65,16 @@ const WorkSessionHeader: React.FC<Props> = ({
                 <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                     <Grid size={{ xs: 6, md: 2 }} offset={{ xs: 3, md: 0 }}>
                         <FormControl fullWidth size="small">
-                            <InputLabel id="user-select-label">User</InputLabel>
-                            <Select
-                                labelId="user-select-label"
-                                value={selectedUser}
-                                label="User"
-                                onChange={(e) => onUserChange(e.target.value)}
-                            >
-                                {users.map((user) => (
-                                    <MenuItem key={user.id} value={user.id}>
-                                        {user.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                            <Autocomplete
+                                size="small"
+                                options={users}
+                                getOptionLabel={(option) => option.name}
+                                value={users.find((user) => user.id === selectedUser) || null}
+                                onChange={(_, newValue) => {
+                                    if (newValue) onUserChange(newValue.id);
+                                }}
+                                renderInput={(params) => <TextField {...params} label="User" variant="outlined" fullWidth />}
+                            />
                         </FormControl>
                     </Grid>
                     <Grid size={{ xs: 6, md: 2 }} offset={{ xs: 3, md: 0 }}>

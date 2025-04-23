@@ -1,0 +1,9 @@
+import { UserResponse } from './UserResponse';
+
+export interface DepartmentResponse {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt?: string | null;
+  users: UserResponse[];
+}
