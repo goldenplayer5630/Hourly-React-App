@@ -1,6 +1,6 @@
 import { UserResponse } from './UserResponse';
 import { GitRepository } from './GitRepositoryResponse';
-import { WorkSessionResponse } from './WorkSessionResponse';
+import { WorkSessionResponse } from './WorkSessions/WorkSessionResponse';
 
 export interface GitCommitResponse {
   id: string;

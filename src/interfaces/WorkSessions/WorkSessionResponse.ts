@@ -1,7 +1,7 @@
 // src/types/WorkSessionResponse.ts
 
-import { GitCommitResponse } from './GitCommitResponse';
-import { UserResponse } from './UserResponse';
+import { GitCommitResponse } from '../GitCommitResponse';
+import { UserResponse } from '../UserResponse';
 
 export interface WorkSessionResponse {
   id: string;

@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { workSessionService } from '../services/WorkSessionService';
-import { WorkSessionResponse } from '../interfaces/WorkSessionResponse';
+import { GitCommitResponse } from '../interfaces/GitCommitResponse';
+import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
 import WorkSessionList from '../components/workSession/WorkSessionList';
 import WorkSessionHeader from '../components/workSession/WorkSessionHeader';
 import { userService } from '../services/UserService';
 import { UserResponse } from '../interfaces/UserResponse';
+import { gitCommitService } from '../services/GitCommitService';
+import WorkSessionModal from '../components/workSession/WorkSessionModal';
 
 const WorkSessionPage = () => {
   const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
@@ -15,6 +18,8 @@ const WorkSessionPage = () => {
   );
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [wbsoOnly, setWbsoOnly] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [gitCommits, setGitCommits] = useState<GitCommitResponse[]>([]);
 
   const getAvailableYears = () => {
     const currentYear = new Date().getFullYear();
@@ -22,7 +27,14 @@ const WorkSessionPage = () => {
   };
 
   const handleAddWorkSession = () => {
-    // Open a dialog or redirect to a form
+    setOpenModal(true);
+  };
+
+  const refreshSessions = () => {
+    workSessionService
+      .filter(selectedUser, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
+      .then(setSessions)
+      .catch(console.error);
   };
 
   useEffect(() => {
@@ -32,11 +44,13 @@ const WorkSessionPage = () => {
   }, []);
 
   useEffect(() => {
-    workSessionService
-      .filter(selectedUser, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
-      .then(setSessions)
-      .catch(console.error);
+    refreshSessions();
   }, [selectedUser, selectedYear, selectedMonth, wbsoOnly]);
+
+  useEffect(() => {
+    gitCommitService.getAll()
+      .then(setGitCommits);
+  }, []);
 
   return (
     <div>
@@ -55,6 +69,17 @@ const WorkSessionPage = () => {
         availableYears={getAvailableYears()}
       />
       <WorkSessionList sessions={sessions} />
+
+      <WorkSessionModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onSubmit={() => {
+          setOpenModal(false);
+          refreshSessions();
+        }}
+        availableGitCommits={gitCommits}
+        userId={selectedUser}
+      />
     </div>
   );
 };

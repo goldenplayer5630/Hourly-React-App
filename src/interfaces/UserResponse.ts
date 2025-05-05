@@ -1,6 +1,6 @@
 import { RoleResponse } from './RoleResponse';
 import { DepartmentResponse } from './DepartmentResponse';
-import { WorkSessionResponse } from './WorkSessionResponse';
+import { WorkSessionResponse } from './WorkSessions/WorkSessionResponse';
 import { GitCommitResponse } from './GitCommitResponse';
 
 export interface UserResponse {

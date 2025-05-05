@@ -1,4 +1,5 @@
-import { WorkSessionResponse } from '../interfaces/WorkSessionResponse';
+import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
+import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
 
 const API_BASE = 'https://localhost:7280/api/WorkSession';
 
@@ -20,7 +21,7 @@ export const workSessionService = {
     if (userId) params.append('userId', userId);
     if (year !== undefined) params.append('year', year.toString());
     if (month !== undefined) params.append('month', month.toString());
-    if (wbso !== undefined) params.append('wbso', wbso.toString());
+    if (wbso == true) params.append('wbso', wbso.toString());
   
     const res = await fetch(`${API_BASE}/Filter?${params.toString()}`);
     console.log(`${API_BASE}/Filter?${params.toString()}`);
@@ -34,7 +35,7 @@ export const workSessionService = {
     return res.json();
   },
 
-  create: async (payload: Partial<WorkSessionResponse>): Promise<WorkSessionResponse> => {
+  create: async (payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorkSessionResponse } from '../../interfaces/WorkSessionResponse';
+import { WorkSessionResponse } from '../../interfaces/WorkSessions/WorkSessionResponse';
 import {
   Card,
   CardContent,
