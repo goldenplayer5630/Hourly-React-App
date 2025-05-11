@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 import { workSessionService } from '../services/WorkSessionService';
 import { GitCommitResponse } from '../interfaces/GitCommitResponse';
 import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
-import WorkSessionList from '../components/workSession/WorkSessionList';
-import WorkSessionHeader from '../components/workSession/WorkSessionHeader';
+import WorkSessionList from '../components/WorkSession/WorkSessionList';
+import WorkSessionHeader from '../components/WorkSession/WorkSessionHeader';
 import { userService } from '../services/UserService';
 import { UserResponse } from '../interfaces/UserResponse';
 import { gitCommitService } from '../services/GitCommitService';
-import WorkSessionModal from '../components/workSession/WorkSessionModal';
+import WorkSessionModal from '../components/WorkSession/WorkSessionModal';
 
 const WorkSessionPage = () => {
   const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
   const [users, setUsers] = useState<UserResponse[]>([]);
-  const [selectedUser, setSelectedUser] = useState<string>('1');
+  const [selectedUser, setSelectedUser] = useState<string>('');
   const [selectedMonth, setSelectedMonth] = useState<string>(
     String(new Date().getMonth() + 1).padStart(2, '0')
   );
@@ -20,6 +20,9 @@ const WorkSessionPage = () => {
   const [wbsoOnly, setWbsoOnly] = useState<boolean>(false);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [gitCommits, setGitCommits] = useState<GitCommitResponse[]>([]);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [selectedSession, setSelectedSession] = useState<WorkSessionResponse | undefined>();
+
 
   const getAvailableYears = () => {
     const currentYear = new Date().getFullYear();
@@ -27,10 +30,36 @@ const WorkSessionPage = () => {
   };
 
   const handleAddWorkSession = () => {
+    setModalMode('create');
+    setSelectedSession(undefined);
     setOpenModal(true);
   };
 
+  const handleEditWorkSession = (session: WorkSessionResponse) => {
+    setModalMode('edit');
+    setSelectedSession(session);
+    setOpenModal(true);
+  };
+
+  const handleViewWorkSession = (session: WorkSessionResponse) => {
+    setModalMode('view');
+    setSelectedSession(session);
+    setOpenModal(true);
+  };
+
+  const handleDeleteWorkSession = (session: WorkSessionResponse) => {
+    if (window.confirm('Are you sure you want to delete this session?')) {
+      workSessionService.delete(session.id)
+        .then(() => {
+          setSessions((prev) => prev.filter((s) => s.id !== session.id));
+        })
+        .catch(console.error);
+    }
+  };
+
   const refreshSessions = () => {
+    if (!selectedUser) return;
+
     workSessionService
       .filter(selectedUser, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
       .then(setSessions)
@@ -68,10 +97,19 @@ const WorkSessionPage = () => {
         users={users}
         availableYears={getAvailableYears()}
       />
-      <WorkSessionList sessions={sessions} />
+      
+      <WorkSessionList
+        sessions={sessions}
+        onView={selectedSession => handleViewWorkSession(selectedSession)}
+        onEdit={selectedSession => handleEditWorkSession(selectedSession)}
+        onDelete={selectedSession => handleDeleteWorkSession(selectedSession)}
+      />
+
 
       <WorkSessionModal
         open={openModal}
+        mode={modalMode}
+        selectedSession={selectedSession}
         onClose={() => setOpenModal(false)}
         onSubmit={() => {
           setOpenModal(false);

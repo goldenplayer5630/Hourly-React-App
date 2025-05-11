@@ -36,6 +36,7 @@ const SideBar: React.FC<Props> = ({ navItems }) => {
           <List>
             {navItems.map((item) => (
               <SideBarItem
+                key={item.label}
                 label={item.label}
                 path={item.path}
                 icon={item.icon}

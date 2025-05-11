@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -9,6 +9,8 @@ import {
   Switch,
   FormControlLabel,
   Autocomplete,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { GitCommitResponse } from '../../interfaces/GitCommitResponse';
 import { CreateWorkSessionRequest } from '../../interfaces/WorkSessions/CreateWorkSessionRequest';
@@ -16,13 +18,19 @@ import { workSessionService } from '../../services/WorkSessionService';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { WorkSessionResponse } from '../../interfaces/WorkSessions/WorkSessionResponse';
+import Notification from '../Common/Notification';
 import dayjs from 'dayjs';
-import 'dayjs/locale/nl'; // 🇳🇱 Load Dutch locale
+import 'dayjs/locale/nl';
 
 dayjs.locale('nl');
 
+type WorkSessionModalMode = 'create' | 'edit' | 'view';
+
 interface CreateWorkSessionModalProps {
   open: boolean;
+  mode: WorkSessionModalMode;
+  selectedSession?: WorkSessionResponse;
   onClose: () => void;
   onSubmit: () => void;
   availableGitCommits: GitCommitResponse[];
@@ -39,18 +47,10 @@ interface WorkSessionFormValues {
   gitCommitIds: string[];
 }
 
-const toInputDateTimeValue = (date: Date): string => {
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  const yyyy = date.getFullYear();
-  const mm = pad(date.getMonth() + 1);
-  const dd = pad(date.getDate());
-  const hh = pad(date.getHours());
-  const min = pad(date.getMinutes());
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-};
-
 const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
   open,
+  mode,
+  selectedSession,
   onClose,
   onSubmit,
   availableGitCommits,
@@ -66,7 +66,31 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     gitCommitIds: [],
   });
 
-  console.log(userId);
+  const [notification, setNotification] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
+
+  useEffect(() => {
+    if (selectedSession) {
+      setForm({
+        taskDescription: selectedSession.taskDescription,
+        startTime: new Date(selectedSession.startTime),
+        endTime: new Date(selectedSession.endTime),
+        factor: selectedSession.factor,
+        wbso: selectedSession.wbso ?? false,
+        otherRemarks: selectedSession.otherRemarks ?? '',
+        gitCommitIds: selectedSession.gitCommits.map(commit => commit.id),
+      });
+    } else if (mode === 'create') {
+      setForm({
+        taskDescription: '',
+        startTime: new Date(),
+        endTime: new Date(),
+        factor: 1.0,
+        wbso: false,
+        otherRemarks: '',
+        gitCommitIds: [],
+      });
+    }
+  }, [selectedSession, mode]);
 
   const handleChange = (field: keyof WorkSessionFormValues, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -86,46 +110,64 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     const request: CreateWorkSessionRequest = {
       userId,
       taskDescription,
-      startTime: startTime,
-      endTime: endTime,
+      startTime,
+      endTime,
       factor,
       wbso,
       otherRemarks,
+      gitCommitIds,
     };
-    
 
     try {
-        console.log('Work session created:', request);
-
-      const created = await workSessionService.create(request);
-
-      for (const commitId of gitCommitIds) {
-        await workSessionService.addGitCommit(created.id, commitId);
+      let created;
+      if (mode === 'edit' && selectedSession) {
+        await workSessionService.update(selectedSession.id, request);
+        created = selectedSession;
+      } else if (mode === 'create') {
+        created = await workSessionService.create(request);
       }
 
+      if (created) {
+        for (const commitId of gitCommitIds) {
+          await workSessionService.addGitCommit(created.id, commitId);
+        }
+      }
+
+      setNotification({ message: 'Work session saved successfully!', severity: 'success' });
       onSubmit();
-    } catch (err) {
-      console.error('Failed to create work session', err);
+    } catch (err: any) {
+      const message = err?.message|| 'Failed to save work session';
+      setNotification({ message, severity: 'error' });
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Create Work Session</DialogTitle>
+    <div>
+      <div />
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>
+        {mode === 'view' && 'View Work Session'}
+        {mode === 'edit' && 'Edit Work Session'}
+        {mode === 'create' && 'Create Work Session'}
+      </DialogTitle>
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
         <TextField
           label="Task Description"
           value={form.taskDescription}
           onChange={(e) => handleChange('taskDescription', e.target.value)}
           fullWidth
+          required
+          error={!form.taskDescription.trim()}
+          helperText={!form.taskDescription.trim() ? 'Task Description is required' : ''}
+          disabled={mode === 'view'}
         />
-
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
           <DateTimePicker
             label="Start Time"
             value={dayjs(form.startTime)}
             onChange={(newValue) => handleChange('startTime', newValue?.toDate() ?? new Date())}
             minutesStep={15}
+            disabled={mode === 'view'}
           />
         </LocalizationProvider>
 
@@ -135,7 +177,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
             value={dayjs(form.endTime)}
             onChange={(newValue) => handleChange('endTime', newValue?.toDate() ?? new Date())}
             minutesStep={15}
-
+            disabled={mode === 'view'}
           />
         </LocalizationProvider>
 
@@ -145,6 +187,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           value={form.factor}
           onChange={(e) => handleChange('factor', parseFloat(e.target.value))}
           fullWidth
+          required
+          disabled={mode === 'view'}
         />
 
         <FormControlLabel
@@ -152,6 +196,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
             <Switch
               checked={form.wbso}
               onChange={(e) => handleChange('wbso', e.target.checked)}
+              disabled={mode === 'view'}
             />
           }
           label="WBSO"
@@ -162,24 +207,33 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           value={form.otherRemarks}
           onChange={(e) => handleChange('otherRemarks', e.target.value)}
           fullWidth
+          disabled={mode === 'view'}
         />
 
         <Autocomplete
           multiple
           options={availableGitCommits}
           getOptionLabel={(option) => option.title}
+          value={availableGitCommits.filter(commit => form.gitCommitIds.includes(commit.id))}
           onChange={(_, value) => handleChange('gitCommitIds', value.map((v) => v.id))}
           renderInput={(params) => (
             <TextField {...params} label="Git Commits" placeholder="Select commits" />
           )}
+          disabled={mode === 'view'}
         />
       </DialogContent>
 
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained">Submit</Button>
+        {mode !== 'view' && (
+          <Button onClick={handleSubmit} variant="contained">Submit</Button>
+        )}
       </DialogActions>
     </Dialog>
+
+    <Notification notification={notification} onClose={() => setNotification(null)} />
+    </div>
+
   );
 };
 

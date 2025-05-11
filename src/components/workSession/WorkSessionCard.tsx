@@ -16,7 +16,11 @@ import {
 } from '@mui/icons-material';
 
 type Props = {
+  key: string;
   session: WorkSessionResponse;
+  onView: (session: WorkSessionResponse) => void;
+  onEdit: (session: WorkSessionResponse) => void;
+  onDelete: (session: WorkSessionResponse) => void;
 };
 
 const formatDate = (date: string) =>
@@ -35,7 +39,7 @@ const formatDuration = (hoursFloat: number) => {
 const truncate = (text: string, maxLength: number) =>
   text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
 
-const WorkSessionCard: React.FC<Props> = ({ session }) => {
+const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDelete }) => {
   const {
     taskDescription,
     startTime,
@@ -48,6 +52,7 @@ const WorkSessionCard: React.FC<Props> = ({ session }) => {
     createdAt,
     updatedAt,
   } = session;
+  key = key;
 
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
@@ -123,15 +128,18 @@ const WorkSessionCard: React.FC<Props> = ({ session }) => {
 
           <Grid size={2}>
             <Box display="flex" justifyContent="flex-end" gap={1}>
-                <Tooltip title="View">
-                  <RemoveRedEye />
-                </Tooltip>
-                <Tooltip title="Edit">
-                  <Edit />
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <Delete />
-              </Tooltip>
+            <Tooltip title="View">
+              <RemoveRedEye onClick={() => onView(session)} sx={{ cursor: 'pointer' }} />
+            </Tooltip>
+
+            <Tooltip title="Edit">
+              <Edit onClick={() => onEdit(session)} sx={{ cursor: 'pointer' }} />
+            </Tooltip>
+
+            <Tooltip title="Delete">
+              <Delete onClick={() => onDelete(session)} sx={{ cursor: 'pointer' }} />
+            </Tooltip>
+
             </Box>
           </Grid>
         </Grid>

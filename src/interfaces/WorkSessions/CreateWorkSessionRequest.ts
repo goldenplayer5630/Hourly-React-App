@@ -6,5 +6,6 @@ export interface CreateWorkSessionRequest {
     factor: number;
     wbso: boolean;
     otherRemarks?: string;
+    gitCommitIds?: string[];
   }
   
