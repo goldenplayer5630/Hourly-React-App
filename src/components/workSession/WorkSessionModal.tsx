@@ -22,6 +22,7 @@ import { WorkSessionResponse } from '../../interfaces/WorkSessions/WorkSessionRe
 import Notification from '../Common/Notification';
 import dayjs from 'dayjs';
 import 'dayjs/locale/nl';
+import { Padding } from '@mui/icons-material';
 
 dayjs.locale('nl');
 
@@ -127,12 +128,6 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         created = await workSessionService.create(request);
       }
 
-      if (created) {
-        for (const commitId of gitCommitIds) {
-          await workSessionService.addGitCommit(created.id, commitId);
-        }
-      }
-
       setNotification({ message: 'Work session saved successfully!', severity: 'success' });
       onSubmit();
     } catch (err: any) {
@@ -143,7 +138,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
 
   return (
     <div>
-      <div />
+      <div style={{ padding: '5px' }}/>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         {mode === 'view' && 'View Work Session'}

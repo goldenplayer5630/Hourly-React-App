@@ -75,7 +75,8 @@ export const workSessionService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-
+    console.log(id);
+    console.log(payload);
     if (!res.ok) {
       // Try to parse the response body (assuming it's JSON)
       const contentType = res.headers.get('Content-Type');
@@ -83,7 +84,11 @@ export const workSessionService = {
   
       if (contentType?.includes('application/json')) {
         const body = await res.json().catch(() => null);
-        if (body?.message) {
+        if (body?.errors) {
+          // Get first error message from model state
+          const firstError = Object.values(body.errors).flat()[0];
+          if (firstError) errorMessage = String(firstError);
+        } else if (body?.message) {
           errorMessage = body.message;
         }
       } else {
@@ -94,7 +99,6 @@ export const workSessionService = {
   
       throw new Error(errorMessage);
     }
-
     return res.json();
   },
 
