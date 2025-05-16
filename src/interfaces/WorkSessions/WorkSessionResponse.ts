@@ -12,7 +12,7 @@ export interface WorkSessionResponse {
   startTime: string;
   endTime: string;
   factor: number;
-  totalEffectiveHours: number;
+  rawEffectiveHours: number;
   netEffectiveHours: number;
 
   wbso?: boolean | null;

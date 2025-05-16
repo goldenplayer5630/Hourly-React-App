@@ -11,6 +11,8 @@ import {
   Autocomplete,
   Snackbar,
   Alert,
+  MenuItem,
+  Select,
 } from '@mui/material';
 import { GitCommitResponse } from '../../interfaces/GitCommitResponse';
 import { CreateWorkSessionRequest } from '../../interfaces/WorkSessions/CreateWorkSessionRequest';
@@ -44,6 +46,7 @@ interface WorkSessionFormValues {
   endTime: Date;
   factor: number;
   wbso: boolean;
+  tvtMode: string;
   tvtAccruedHours: number;
   tvtUsedHours: number;
   otherRemarks?: string;
@@ -65,6 +68,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     endTime: new Date(),
     factor: 1.0,
     wbso: false,
+    tvtMode: 'none',
     tvtAccruedHours: 0,
     tvtUsedHours: 0,
     otherRemarks: '',
@@ -81,6 +85,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         endTime: new Date(selectedSession.endTime),
         factor: selectedSession.factor,
         wbso: selectedSession.wbso ?? false,
+        tvtMode: selectedSession.tvtAccruedHours > 0 ? 'accrue' : selectedSession.tvtUsedHours > 0 ? 'use' : 'none',
         tvtAccruedHours: selectedSession.tvtAccruedHours,
         tvtUsedHours: selectedSession.tvtUsedHours,
         otherRemarks: selectedSession.otherRemarks ?? '',
@@ -93,6 +98,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         endTime: new Date(),
         factor: 1.0,
         wbso: false,
+        tvtMode: 'none',
         tvtAccruedHours: 0,
         tvtUsedHours: 0,
         otherRemarks: '',
@@ -208,6 +214,48 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           }
           label="WBSO"
         />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={form.tvtAccruedHours > 0 || form.tvtUsedHours > 0}
+              onChange={(e) => {
+                if (!e.target.checked) {
+                  handleChange('tvtAccruedHours', 0);
+                  handleChange('tvtUsedHours', 0);
+                }
+              }}
+              disabled={mode === 'view'}
+            />
+          }
+          label="Display TVT Hours"
+        />
+
+        {form.tvtMode === 'accrue' && (
+          <Select
+            label="TVT Accrued Hours"
+            value={form.tvtAccruedHours}
+            onChange={(e) => handleChange('tvtAccruedHours', parseFloat(e.target.value.toString()))}
+          >
+            {Array.from(Array(33).keys()).map(i => (
+              <MenuItem key={i} value={i * 0.25}>{(i * 0.25).toFixed(2)} uur</MenuItem>
+            ))}
+          </Select>
+
+        )}
+
+        {form.tvtMode === 'use' && (
+          <TextField
+            label="TVT Used Hours"
+            type="number"
+            value={form.tvtUsedHours}
+            inputProps={{ step: 0.25, min: 0 }}
+            onChange={(e) => handleChange('tvtUsedHours', parseFloat(e.target.value))}
+            fullWidth
+            required
+            disabled={mode === 'view'}
+          />
+        )}
+
 
         <TextField
           label="Other Remarks"

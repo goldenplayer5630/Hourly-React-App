@@ -47,7 +47,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
     factor,
     wbso,
     otherRemarks,
-    totalEffectiveHours: totalEffectiveHours,
+    rawEffectiveHours: totalEffectiveHours,
     netEffectiveHours: netEffectiveHours,
     tvtAccruedHours,
     tvtUsedHours,
@@ -61,7 +61,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
-        <Grid container spacing={2} alignItems="center" sx={{ mb: 1 }}>
+        <Grid container spacing={0} alignItems="center" sx={{ mb: 1 }}>
           {/* Time */}
           <Grid size={2}>
             <Typography variant="subtitle2" color="text.secondary">
@@ -94,7 +94,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           {/* Total effective hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
-              {"Total effective hours:"}
+              {"Total hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
               {formatTime(totalEffectiveHours)}
@@ -107,14 +107,14 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
               {"T4T Hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
-              {tvtAccruedHours > 0 ? `+ ${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `- ${formatTime(tvtUsedHours)}` : ''}
+              {tvtAccruedHours > 0 ? `- ${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `+ ${formatTime(tvtUsedHours)}` : ''}
             </Typography>
           </Grid>
 
           {/* Net effective hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
-              {"Net effective hours:"}
+              {"Net total hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
               {formatTime(netEffectiveHours)}
@@ -127,10 +127,10 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           </Grid>
 
           {/* Task */}
-          <Grid size={5}>
+          <Grid size={3}>
             <Tooltip title={taskDescription}>
               <Typography variant="body1">
-                {truncate(taskDescription, 150)}
+                {truncate(taskDescription, 300)}
               </Typography>
             </Tooltip>
           </Grid>
