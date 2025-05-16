@@ -29,7 +29,7 @@ const formatDate = (date: string) =>
     timeStyle: 'short',
   });
 
-const formatDuration = (hoursFloat: number) => {
+const formatTime = (hoursFloat: number) => {
   const totalMinutes = Math.round(hoursFloat * 60);
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
@@ -47,7 +47,11 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
     factor,
     wbso,
     otherRemarks,
-    duration,
+    totalEffectiveHours: totalEffectiveHours,
+    netEffectiveHours: netEffectiveHours,
+    tvtAccruedHours,
+    tvtUsedHours,
+    locked,
     user,
     createdAt,
     updatedAt,
@@ -57,7 +61,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
-        <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
+        <Grid container spacing={2} alignItems="center" sx={{ mb: 1 }}>
           {/* Time */}
           <Grid size={2}>
             <Typography variant="subtitle2" color="text.secondary">
@@ -87,13 +91,33 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
               </Typography>
           </Grid>
 
-          {/* Duration */}
+          {/* Total effective hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
-              {"Duration:"}
+              {"Total effective hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
-              {formatDuration(duration)}
+              {formatTime(totalEffectiveHours)}
+            </Typography>
+          </Grid>
+
+          {/* TVT hours */}
+          <Grid size={1}>
+          < Typography variant="subtitle2" color="text.secondary">
+              {"T4T Hours:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {tvtAccruedHours > 0 ? `+ ${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `- ${formatTime(tvtUsedHours)}` : ''}
+            </Typography>
+          </Grid>
+
+          {/* Net effective hours */}
+          <Grid size={1}>
+          < Typography variant="subtitle2" color="text.secondary">
+              {"Net effective hours:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatTime(netEffectiveHours)}
             </Typography>
           </Grid>
 

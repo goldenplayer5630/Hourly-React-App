@@ -12,10 +12,15 @@ export interface WorkSessionResponse {
   startTime: string;
   endTime: string;
   factor: number;
-  duration: number;
+  totalEffectiveHours: number;
+  netEffectiveHours: number;
 
   wbso?: boolean | null;
+  locked ?: boolean | null;
   otherRemarks?: string | null;
+
+  tvtAccruedHours: number;
+  tvtUsedHours: number;
 
   gitCommits: GitCommitResponse[];
 

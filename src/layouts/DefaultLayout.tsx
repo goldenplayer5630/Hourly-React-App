@@ -10,6 +10,7 @@ import {
 import SideBar from '../components/SideBar/SideBar';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import TimerIcon from '@mui/icons-material/Timer';
+import DocumentIcon from '@mui/icons-material/Description';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { NavItem } from '../classes/NavItem';
@@ -18,6 +19,7 @@ const navItems = [
   new NavItem('Dashboard', '/', <DashboardIcon />),
   new NavItem('Work Sessions', '/work-sessions', <TimerIcon />),
   new NavItem('Git Projects', '/git-projects', <GitHubIcon />),
+  new NavItem('Contracts', '/contracts', <DocumentIcon />),
   new NavItem('Settings', '/settings', <SettingsIcon />),
 ];
 

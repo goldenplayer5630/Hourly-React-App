@@ -44,6 +44,8 @@ interface WorkSessionFormValues {
   endTime: Date;
   factor: number;
   wbso: boolean;
+  tvtAccruedHours: number;
+  tvtUsedHours: number;
   otherRemarks?: string;
   gitCommitIds: string[];
 }
@@ -63,6 +65,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     endTime: new Date(),
     factor: 1.0,
     wbso: false,
+    tvtAccruedHours: 0,
+    tvtUsedHours: 0,
     otherRemarks: '',
     gitCommitIds: [],
   });
@@ -77,6 +81,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         endTime: new Date(selectedSession.endTime),
         factor: selectedSession.factor,
         wbso: selectedSession.wbso ?? false,
+        tvtAccruedHours: selectedSession.tvtAccruedHours,
+        tvtUsedHours: selectedSession.tvtUsedHours,
         otherRemarks: selectedSession.otherRemarks ?? '',
         gitCommitIds: selectedSession.gitCommits.map(commit => commit.id),
       });
@@ -87,6 +93,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         endTime: new Date(),
         factor: 1.0,
         wbso: false,
+        tvtAccruedHours: 0,
+        tvtUsedHours: 0,
         otherRemarks: '',
         gitCommitIds: [],
       });
@@ -104,6 +112,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
       endTime,
       factor,
       wbso,
+      tvtAccruedHours,
+      tvtUsedHours,
       otherRemarks,
       gitCommitIds,
     } = form;
@@ -114,6 +124,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
       startTime,
       endTime,
       factor,
+      tvtAccruedHours,
+      tvtUsedHours,
       wbso,
       otherRemarks,
       gitCommitIds,

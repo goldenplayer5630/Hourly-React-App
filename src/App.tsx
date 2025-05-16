@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import GitProjectPage from './pages/GitProjectPage';
 import SettingsPage from './pages/SettingsPage';
+import ContractsPage from './pages/ContractsPage';
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
         <Route path="/git-projects" element={<GitProjectPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/work-sessions" element={<WorkSessionPage />} />
+        <Route path="/contracts" element={<ContractsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
     </Routes>
