@@ -94,7 +94,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           {/* Total effective hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
-              {"Total hours:"}
+              {"Effective hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
               {formatTime(totalEffectiveHours)}
@@ -104,10 +104,10 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           {/* TVT hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
-              {"T4T Hours:"}
+              {`${tvtAccruedHours > 0 ? `T4T Hours accrued:` : tvtUsedHours > 0 ? `T4T Hours used:` : ''}`}
             </Typography>
             <Typography variant="h6" color="text.black">
-              {tvtAccruedHours > 0 ? `- ${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `+ ${formatTime(tvtUsedHours)}` : ''}
+              {tvtAccruedHours > 0 ? `${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `${formatTime(tvtUsedHours)}` : ''}
             </Typography>
           </Grid>
 

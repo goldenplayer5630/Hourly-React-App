@@ -13,6 +13,10 @@ import {
   Alert,
   MenuItem,
   Select,
+  FormControl,
+  InputLabel,
+  FormGroup,
+  Radio,
 } from '@mui/material';
 import { GitCommitResponse } from '../../interfaces/GitCommitResponse';
 import { CreateWorkSessionRequest } from '../../interfaces/WorkSessions/CreateWorkSessionRequest';
@@ -29,6 +33,7 @@ import { Padding } from '@mui/icons-material';
 dayjs.locale('nl');
 
 type WorkSessionModalMode = 'create' | 'edit' | 'view';
+type TvtMode = 'none' | 'accrue' | 'use';
 
 interface CreateWorkSessionModalProps {
   open: boolean;
@@ -108,8 +113,21 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
   }, [selectedSession, mode]);
 
   const handleChange = (field: keyof WorkSessionFormValues, value: any) => {
+    console.log('handleChange', field, value);
     setForm((prev) => ({ ...prev, [field]: value }));
   };
+
+  const formatTime = (hoursFloat: number) => {
+    const totalMinutes = Math.round(hoursFloat * 60);
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return `${h}h ${m}m`;
+  };
+
+  const convertToFloat = (timeString: string) => {
+    const [h, m] = timeString.split('h').map((part) => parseFloat(part.trim()));
+    return h + m / 60;
+  }
 
   const handleSubmit = async () => {
     const {
@@ -120,6 +138,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
       wbso,
       tvtAccruedHours,
       tvtUsedHours,
+      tvtMode,
       otherRemarks,
       gitCommitIds,
     } = form;
@@ -204,56 +223,75 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           disabled={mode === 'view'}
         />
 
-        <FormControlLabel
-          control={
-            <Switch
-              checked={form.wbso}
-              onChange={(e) => handleChange('wbso', e.target.checked)}
-              disabled={mode === 'view'}
-            />
-          }
-          label="WBSO"
-        />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={form.tvtAccruedHours > 0 || form.tvtUsedHours > 0}
-              onChange={(e) => {
-                if (!e.target.checked) {
-                  handleChange('tvtAccruedHours', 0);
+        <FormGroup row>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={form.wbso}
+                onChange={(e) => handleChange('wbso', e.target.checked)}
+                disabled={mode === 'view'}
+              />
+            }
+            label="WBSO"
+          />
+
+          <FormControlLabel
+            control={
+              <Radio
+                checked={form.tvtMode === 'accrue'}
+                onChange={() => {
+                  handleChange('tvtMode', 'accrue');
                   handleChange('tvtUsedHours', 0);
-                }
-              }}
-              disabled={mode === 'view'}
-            />
-          }
-          label="Display TVT Hours"
-        />
+                }}
+                disabled={mode === 'view'}
+              />
+            }
+            label="Accrue T4T Hours"
+          />
+
+          <FormControlLabel
+            control={
+              <Radio
+                checked={form.tvtMode === 'use'}
+                onChange={() => {
+                  handleChange('tvtMode', 'use');
+                  handleChange('tvtAccruedHours', 0);
+                }}
+                disabled={mode === 'view'}
+              />
+            }
+            label="Use T4T Hours"
+          />
+        </FormGroup>
 
         {form.tvtMode === 'accrue' && (
+        <FormControl fullWidth>
+          <InputLabel>TVT Accrued Hours</InputLabel>
           <Select
             label="TVT Accrued Hours"
-            value={form.tvtAccruedHours}
-            onChange={(e) => handleChange('tvtAccruedHours', parseFloat(e.target.value.toString()))}
+            value={formatTime(form.tvtAccruedHours)}
+            onChange={(e) => handleChange('tvtAccruedHours', convertToFloat(e.target.value.toString()))}
           >
             {Array.from(Array(33).keys()).map(i => (
-              <MenuItem key={i} value={i * 0.25}>{(i * 0.25).toFixed(2)} uur</MenuItem>
+              <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
             ))}
           </Select>
-
+        </FormControl>
         )}
 
         {form.tvtMode === 'use' && (
-          <TextField
+        <FormControl fullWidth>
+          <InputLabel>TVT Used Hours</InputLabel>
+          <Select
             label="TVT Used Hours"
-            type="number"
-            value={form.tvtUsedHours}
-            inputProps={{ step: 0.25, min: 0 }}
-            onChange={(e) => handleChange('tvtUsedHours', parseFloat(e.target.value))}
-            fullWidth
-            required
-            disabled={mode === 'view'}
-          />
+            value={formatTime(form.tvtUsedHours)}
+            onChange={(e) => handleChange('tvtUsedHours', convertToFloat(e.target.value.toString()))}
+          >
+            {Array.from(Array(33).keys()).map(i => (
+              <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         )}
 
 
