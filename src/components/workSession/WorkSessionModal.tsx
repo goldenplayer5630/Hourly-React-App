@@ -50,6 +50,7 @@ interface WorkSessionFormValues {
   startTime: Date;
   endTime: Date;
   factor: number;
+  breakTime?: number;
   wbso: boolean;
   tvtMode: string;
   tvtAccruedHours: number;
@@ -72,6 +73,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     startTime: new Date(),
     endTime: new Date(),
     factor: 1.0,
+    breakTime: 0,
     wbso: false,
     tvtMode: 'none',
     tvtAccruedHours: 0,
@@ -89,6 +91,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         startTime: new Date(selectedSession.startTime),
         endTime: new Date(selectedSession.endTime),
         factor: selectedSession.factor,
+        breakTime: selectedSession.breakTime,
         wbso: selectedSession.wbso ?? false,
         tvtMode: selectedSession.tvtAccruedHours > 0 ? 'accrue' : selectedSession.tvtUsedHours > 0 ? 'use' : 'none',
         tvtAccruedHours: selectedSession.tvtAccruedHours,
@@ -102,6 +105,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         startTime: new Date(),
         endTime: new Date(),
         factor: 1.0,
+        breakTime: 0,
         wbso: false,
         tvtMode: 'none',
         tvtAccruedHours: 0,
@@ -135,6 +139,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
       startTime,
       endTime,
       factor,
+      breakTime,
       wbso,
       tvtAccruedHours,
       tvtUsedHours,
@@ -149,6 +154,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
       startTime,
       endTime,
       factor,
+      breakTime,
       tvtAccruedHours,
       tvtUsedHours,
       wbso,

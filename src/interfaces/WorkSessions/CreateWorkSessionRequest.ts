@@ -3,6 +3,7 @@ export interface CreateWorkSessionRequest {
     taskDescription: string;
     startTime: Date;
     endTime: Date;
+    breakTime: number;
     factor: number;
     wbso: boolean;
     tvtAccruedHours: number;

@@ -11,6 +11,7 @@ export interface WorkSessionResponse {
   taskDescription: string;
   startTime: string;
   endTime: string;
+  breakTime: number;
   factor: number;
   rawEffectiveHours: number;
   netEffectiveHours: number;
