@@ -65,7 +65,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
       <CardContent>
         <Grid container spacing={0} alignItems="center" sx={{ mb: 1 }}>
           {/* Time */}
-          <Grid size={2}>
+          <Grid size={2} >
             <Typography variant="subtitle2" color="text.secondary">
               {"Start:"}
             </Typography>
@@ -74,8 +74,8 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
             </Typography>
           </Grid>
 
-          <Grid size={2}>
-          < Typography variant="subtitle2" color="text.secondary">
+          <Grid size={2} >
+            <Typography variant="subtitle2" color="text.secondary">
               {"End:"}
             </Typography>
             <Typography variant="h6" color="text.black">
@@ -84,18 +84,18 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           </Grid>
 
           {/* Factor */}
-          <Grid size={1}>
-            < Typography variant="subtitle2" color="text.secondary">
-                {"Factor:"}
-              </Typography>
-              <Typography variant="h6" color="text.black">
-                x{factor.toFixed(2)}
-              </Typography>
+          <Grid size={1} >
+            <Typography variant="subtitle2" color="text.secondary">
+              {"Factor:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              x{factor.toFixed(2)}
+            </Typography>
           </Grid>
 
-            {/* Break hours */}
-          <Grid size={1}>
-          < Typography variant="subtitle2" color="text.secondary">
+          {/* Break hours */}
+          <Grid size={1} >
+            <Typography variant="subtitle2" color="text.secondary">
               {"Break hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
@@ -104,8 +104,8 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           </Grid>
 
           {/* Total effective hours */}
-          <Grid size={1}>
-          < Typography variant="subtitle2" color="text.secondary">
+          <Grid size={1} >
+            <Typography variant="subtitle2" color="text.secondary">
               {"Effective hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
@@ -114,8 +114,8 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           </Grid>
 
           {/* TVT hours */}
-          <Grid size={1}>
-          < Typography variant="subtitle2" color="text.secondary">
+          <Grid size={1} >
+            <Typography variant="subtitle2" color="text.secondary">
               {`${tvtAccruedHours > 0 ? `T4T accrued:` : tvtUsedHours > 0 ? `T4T used:` : ''}`}
             </Typography>
             <Typography variant="h6" color="text.black">
@@ -124,8 +124,8 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           </Grid>
 
           {/* Net effective hours */}
-          <Grid size={1}>
-          < Typography variant="subtitle2" color="text.secondary">
+          <Grid size={1} >
+            <Typography variant="subtitle2" color="text.secondary">
               {"Net total hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
@@ -133,13 +133,8 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
             </Typography>
           </Grid>
 
-          {/* WBSO */}
-          <Grid size={1}>
-            {wbso && <Chip label="WBSO" color="secondary" size="small" />}
-          </Grid>
-
           {/* Task */}
-          <Grid size={2}>
+          <Grid size={3} >
             <Tooltip title={taskDescription}>
               <Typography variant="body1">
                 {truncate(taskDescription, 300)}
@@ -149,7 +144,11 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
         </Grid>
 
         <Grid container spacing={2} alignItems="center">
-          <Grid size={10}>
+          {/* WBSO */}
+          <Grid size={2} >
+            {wbso && <Chip label="WBSO" color="secondary" size="small" />}
+          </Grid>
+          <Grid size={8}>
             {otherRemarks && (
             <Box>
               < Typography variant="subtitle2" color="text.secondary">
