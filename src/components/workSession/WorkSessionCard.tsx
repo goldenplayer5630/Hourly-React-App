@@ -45,10 +45,11 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
     startTime,
     endTime,
     factor,
+    breakTime,
     wbso,
     otherRemarks,
-    rawEffectiveHours: totalEffectiveHours,
-    netEffectiveHours: netEffectiveHours,
+    rawEffectiveHours,
+    netEffectiveHours,
     tvtAccruedHours,
     tvtUsedHours,
     locked,
@@ -58,6 +59,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
   } = session;
   key = key;
 
+  console.log('WorkSessionCard', session);
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
@@ -91,20 +93,30 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
               </Typography>
           </Grid>
 
+            {/* Break hours */}
+          <Grid size={1}>
+          < Typography variant="subtitle2" color="text.secondary">
+              {"Break hours:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatTime(breakTime)}
+            </Typography>
+          </Grid>
+
           {/* Total effective hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
               {"Effective hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
-              {formatTime(totalEffectiveHours)}
+              {formatTime(rawEffectiveHours)}
             </Typography>
           </Grid>
 
           {/* TVT hours */}
           <Grid size={1}>
           < Typography variant="subtitle2" color="text.secondary">
-              {`${tvtAccruedHours > 0 ? `T4T Hours accrued:` : tvtUsedHours > 0 ? `T4T Hours used:` : ''}`}
+              {`${tvtAccruedHours > 0 ? `T4T accrued:` : tvtUsedHours > 0 ? `T4T used:` : ''}`}
             </Typography>
             <Typography variant="h6" color="text.black">
               {tvtAccruedHours > 0 ? `${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `${formatTime(tvtUsedHours)}` : ''}
@@ -127,7 +139,7 @@ const WorkSessionCard: React.FC<Props> = ({ key, session, onView, onEdit, onDele
           </Grid>
 
           {/* Task */}
-          <Grid size={3}>
+          <Grid size={2}>
             <Tooltip title={taskDescription}>
               <Typography variant="body1">
                 {truncate(taskDescription, 300)}

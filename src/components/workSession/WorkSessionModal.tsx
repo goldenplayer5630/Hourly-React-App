@@ -50,7 +50,7 @@ interface WorkSessionFormValues {
   startTime: Date;
   endTime: Date;
   factor: number;
-  breakTime?: number;
+  breakTime: number;
   wbso: boolean;
   tvtMode: string;
   tvtAccruedHours: number;
@@ -182,7 +182,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
   return (
     <div>
       <div style={{ padding: '5px' }}/>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
         {mode === 'view' && 'View Work Session'}
         {mode === 'edit' && 'Edit Work Session'}
@@ -199,25 +199,30 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           helperText={!form.taskDescription.trim() ? 'Task Description is required' : ''}
           disabled={mode === 'view'}
         />
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
-          <DateTimePicker
-            label="Start Time"
-            value={dayjs(form.startTime)}
-            onChange={(newValue) => handleChange('startTime', newValue?.toDate() ?? new Date())}
-            minutesStep={15}
-            disabled={mode === 'view'}
-          />
-        </LocalizationProvider>
 
-        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
-          <DateTimePicker
-            label="End Time"
-            value={dayjs(form.endTime)}
-            onChange={(newValue) => handleChange('endTime', newValue?.toDate() ?? new Date())}
-            minutesStep={15}
-            disabled={mode === 'view'}
-          />
-        </LocalizationProvider>
+        <FormGroup row sx={{ justifyContent: 'space-between' }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
+            <DateTimePicker
+              label="Start Time"
+              value={dayjs(form.startTime)}
+              onChange={(newValue) => handleChange('startTime', newValue?.toDate() ?? new Date())}
+              minutesStep={15}
+              disabled={mode === 'view'}
+              sx={{ flex: 1, marginRight: 2 }}
+            />
+          </LocalizationProvider>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="nl">
+            <DateTimePicker
+              label="End Time"
+              value={dayjs(form.endTime)}
+              onChange={(newValue) => handleChange('endTime', newValue?.toDate() ?? new Date())}
+              minutesStep={15}
+              disabled={mode === 'view'}
+              sx={{ flex: 1 }}
+            />
+          </LocalizationProvider>
+        </FormGroup>
 
         <TextField
           label="Factor"
@@ -229,18 +234,21 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           disabled={mode === 'view'}
         />
 
-        <FormGroup row>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={form.wbso}
-                onChange={(e) => handleChange('wbso', e.target.checked)}
-                disabled={mode === 'view'}
-              />
-            }
-            label="WBSO"
-          />
 
+        <FormControl fullWidth>
+          <InputLabel>Break Time</InputLabel>
+          <Select
+            label="Break Time"
+            value={formatTime(form.breakTime)}
+            onChange={(e) => handleChange('tvtAccruedHours', convertToFloat(e.target.value.toString()))}
+          >
+            {Array.from(Array(5).keys()).map(i => (
+              <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormGroup row>
           <FormControlLabel
             control={
               <Radio
@@ -268,37 +276,38 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
             }
             label="Use T4T Hours"
           />
+          {form.tvtMode === 'accrue' && (
+          <FormControl fullWidth>
+            <InputLabel>TVT Accrued Hours</InputLabel>
+            <Select
+              label="TVT Accrued Hours"
+              value={formatTime(form.tvtAccruedHours)}
+              onChange={(e) => handleChange('tvtAccruedHours', convertToFloat(e.target.value.toString()))}
+            >
+              {Array.from(Array(33).keys()).map(i => (
+                <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          )}
+
+          {form.tvtMode === 'use' && (
+          <FormControl fullWidth>
+            <InputLabel>TVT Used Hours</InputLabel>
+            <Select
+              label="TVT Used Hours"
+              value={formatTime(form.tvtUsedHours)}
+              onChange={(e) => handleChange('tvtUsedHours', convertToFloat(e.target.value.toString()))}
+            >
+              {Array.from(Array(33).keys()).map(i => (
+                <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          )}
         </FormGroup>
 
-        {form.tvtMode === 'accrue' && (
-        <FormControl fullWidth>
-          <InputLabel>TVT Accrued Hours</InputLabel>
-          <Select
-            label="TVT Accrued Hours"
-            value={formatTime(form.tvtAccruedHours)}
-            onChange={(e) => handleChange('tvtAccruedHours', convertToFloat(e.target.value.toString()))}
-          >
-            {Array.from(Array(33).keys()).map(i => (
-              <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        )}
 
-        {form.tvtMode === 'use' && (
-        <FormControl fullWidth>
-          <InputLabel>TVT Used Hours</InputLabel>
-          <Select
-            label="TVT Used Hours"
-            value={formatTime(form.tvtUsedHours)}
-            onChange={(e) => handleChange('tvtUsedHours', convertToFloat(e.target.value.toString()))}
-          >
-            {Array.from(Array(33).keys()).map(i => (
-              <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        )}
 
 
         <TextField
@@ -307,6 +316,17 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           onChange={(e) => handleChange('otherRemarks', e.target.value)}
           fullWidth
           disabled={mode === 'view'}
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={form.wbso}
+              onChange={(e) => handleChange('wbso', e.target.checked)}
+              disabled={mode === 'view'}
+            />
+          }
+          label="WBSO"
         />
 
         <Autocomplete
