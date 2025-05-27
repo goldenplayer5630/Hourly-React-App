@@ -1,5 +1,5 @@
 export interface CreateWorkSessionRequest {
-    userId: string;
+    userContractId: string;
     taskDescription: string;
     startTime: Date;
     endTime: Date;

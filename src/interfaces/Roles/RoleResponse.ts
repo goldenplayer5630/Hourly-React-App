@@ -1,5 +1,5 @@
-import { UserResponse } from './UserResponse';
-import { GitCommitResponse } from './GitCommitResponse';
+import { UserResponse } from '../Users/UserResponse';
+import { GitCommitResponse } from '../GitCommits/GitCommitResponse';
 
 export interface RoleResponse {
   id: string;

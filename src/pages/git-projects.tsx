@@ -1,4 +1,4 @@
-const GitProjectPage = () => {
+const GitProjectsPage = () => {
     return (
         <div>
         <h1>Git Repository</h1>
@@ -7,4 +7,4 @@ const GitProjectPage = () => {
     );
 }
 
-export default GitProjectPage;
+export default GitProjectsPage;

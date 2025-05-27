@@ -1,4 +1,4 @@
-import { UserResponse } from './UserResponse';
+import { UserResponse } from '../Users/UserResponse';
 
 export interface DepartmentResponse {
   id: string;

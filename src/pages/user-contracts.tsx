@@ -1,6 +1,6 @@
 
 
-const ContractsPage = () => {
+const UserContractsPage = () => {
     return (
         <div>
         <h1>Contracts</h1>
@@ -9,4 +9,4 @@ const ContractsPage = () => {
     );
 }
 
-export default ContractsPage;
+export default UserContractsPage;

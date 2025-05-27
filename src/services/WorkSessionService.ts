@@ -11,14 +11,14 @@ export const workSessionService = {
   },
 
   filter: async (
-    userId?: string,
+    userContractId?: string,
     year?: number,
     month?: number,
     wbso?: boolean
   ): Promise<WorkSessionResponse[]> => {
     const params = new URLSearchParams();
   
-    if (userId) params.append('userId', userId);
+    if (userContractId) params.append('userContractId', userContractId);
     if (year !== undefined) params.append('year', year.toString());
     if (month !== undefined) params.append('month', month.toString());
     if (wbso == true) params.append('wbso', wbso.toString());
@@ -31,6 +31,7 @@ export const workSessionService = {
 
   getById: async (id: string): Promise<WorkSessionResponse> => {
     const res = await fetch(`${API_BASE}/${id}`);
+    console.log(`${API_BASE}/${id}`);
     if (!res.ok) throw new Error(`Work session ${id} not found`);
     return res.json();
   },
@@ -75,8 +76,7 @@ export const workSessionService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    console.log(id);
-    console.log(payload);
+
     if (!res.ok) {
       // Try to parse the response body (assuming it's JSON)
       const contentType = res.headers.get('Content-Type');

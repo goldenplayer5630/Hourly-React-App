@@ -1,4 +1,4 @@
-import { GitCommitResponse } from '../interfaces/GitCommitResponse';
+import { GitCommitResponse } from '../interfaces/GitCommits/GitCommitResponse';
 
 const API_BASE = 'https://localhost:7280/api/GitCommit';
 

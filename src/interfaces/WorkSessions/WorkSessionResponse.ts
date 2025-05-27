@@ -1,12 +1,13 @@
 // src/types/WorkSessionResponse.ts
 
-import { GitCommitResponse } from '../GitCommitResponse';
-import { UserResponse } from '../UserResponse';
+import { GitCommitResponse } from '../GitCommits/GitCommitResponse';
+import { UserContractResponse } from '../UserContracts/UserContractResponse';
+import { UserResponse } from '../Users/UserResponse';
 
 export interface WorkSessionResponse {
   id: string;
-  userId: string;
-  user?: UserResponse | null;
+  userContractId: string;
+  userContract?: UserContractResponse | null;
 
   taskDescription: string;
   startTime: string;

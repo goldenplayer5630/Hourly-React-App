@@ -1,4 +1,4 @@
-import { UserResponse } from '../interfaces/UserResponse';
+import { UserResponse } from '../interfaces/Users/UserResponse';
 
 const API_BASE = 'https://localhost:7280/api/User';
 
