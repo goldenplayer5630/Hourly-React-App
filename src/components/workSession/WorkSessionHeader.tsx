@@ -80,7 +80,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                                 onChange={(_, newValue) => {
                                     if (newValue) onUserChange(newValue.id);
                                 }}
-                                renderInput={(params) => <TextField {...params} label="User" variant="outlined" fullWidth />}
+                                renderInput={(params) => <TextField {...params} label="Employee" variant="outlined" fullWidth />}
                             />
                         </FormControl>
                     </Grid>
@@ -94,7 +94,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                                 onChange={(_, newValue) => {
                                     if (newValue) onUserContractChange(newValue.id);
                                 }}
-                                renderInput={(params) => <TextField {...params} label="User Contract" variant="outlined" fullWidth />}
+                                renderInput={(params) => <TextField {...params} label="Contract" variant="outlined" fullWidth />}
                             />
                         </FormControl>
                     </Grid>

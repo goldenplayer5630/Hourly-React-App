@@ -156,7 +156,6 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
 
 
   const handleChange = (field: keyof WorkSessionFormValues, value: any) => {
-    console.log(`Updating field: ${field}, value: ${value}`);
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
