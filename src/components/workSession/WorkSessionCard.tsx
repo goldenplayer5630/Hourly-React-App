@@ -58,7 +58,6 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
     updatedAt,
   } = session;
 
-  console.log('breakTime', breakTime);
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>

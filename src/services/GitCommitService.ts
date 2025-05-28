@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { GitCommitResponse } from '../interfaces/GitCommits/GitCommitResponse';
 
 const API_BASE = 'https://localhost:7280/api/GitCommit';
@@ -10,20 +11,17 @@ export const gitCommitService = {
   },
 
   filter: async (
-    GitCommitId?: string,
-    year?: number,
-    month?: number,
-    wbso?: boolean
+    repositoryId?: string,
+    authorId?: string,
+    authoredDate?: dayjs.Dayjs | string,
   ): Promise<GitCommitResponse[]> => {
     const params = new URLSearchParams();
   
-    if (GitCommitId) params.append('GitCommitId', GitCommitId);
-    if (year !== undefined) params.append('year', year.toString());
-    if (month !== undefined) params.append('month', month.toString());
-    if (wbso !== undefined) params.append('wbso', wbso.toString());
+    if (repositoryId) params.append('RepositoryId', repositoryId);
+    if (authorId) params.append('AuthorId', authorId);
+    if (authoredDate) params.append('AuthoredDate', authoredDate.toString());
   
     const res = await fetch(`${API_BASE}/Filter?${params.toString()}`);
-    console.log(`${API_BASE}/Filter?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to filter GitCommits');
     return res.json();
   },  

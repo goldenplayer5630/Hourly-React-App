@@ -91,7 +91,9 @@ const WorkSessionsPage = () => {
   }, [selectedUserContract, selectedYear, selectedMonth, wbsoOnly]);
 
   useEffect(() => {
-    gitCommitService.getAll()
+    if (!selectedUser) return;
+
+    gitCommitService.filter()
       .then(setGitCommits);
   }, []);
 
@@ -132,7 +134,7 @@ const WorkSessionsPage = () => {
           setOpenModal(false);
           refreshSessions();
         }}
-        availableGitCommits={gitCommits}
+        selectedUser={selectedUser}
         userContractId={selectedUserContract}
       />
     </div>

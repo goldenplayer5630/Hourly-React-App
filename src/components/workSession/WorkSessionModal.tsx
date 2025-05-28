@@ -34,6 +34,7 @@ import Notification from '../Common/Notification';
 import dayjs from 'dayjs';
 import 'dayjs/locale/nl';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import { gitCommitService } from '../../services/GitCommitService';
 
 dayjs.locale('nl');
 
@@ -46,8 +47,8 @@ interface CreateWorkSessionModalProps {
   selectedSession?: WorkSessionResponse;
   onClose: () => void;
   onSubmit: () => void;
-  availableGitCommits: GitCommitResponse[];
   userContractId: string;
+  selectedUser: string;
 }
 
 interface WorkSessionFormValues {
@@ -57,7 +58,7 @@ interface WorkSessionFormValues {
   factor: number;
   breakTime: number;
   wbso: boolean;
-  tvtMode: string;
+  tvtMode: TvtMode;
   tvtAccruedHours: number;
   tvtUsedHours: number;
   otherRemarks?: string;
@@ -70,8 +71,8 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
   selectedSession,
   onClose,
   onSubmit,
-  availableGitCommits,
-  userContractId: userContractId,
+  userContractId,
+  selectedUser
 }) => {
   const [form, setForm] = useState<WorkSessionFormValues>({
     taskDescription: '',
@@ -88,9 +89,10 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
   });
 
   const [notification, setNotification] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
+  const [availableGitCommits, setAvailableGitCommits] = useState<GitCommitResponse[]>([]);
+  const [selectedGitCommits, setSelectedGitCommits] = useState<GitCommitResponse[]>([]);
 
   useEffect(() => {
-
     if (selectedSession) {
       workSessionService.getById(selectedSession.id)
       .then((fullSession) => {
@@ -108,7 +110,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
         gitCommitIds: fullSession.gitCommits.map(commit => commit.id),
         });
 
-        console.log('Fetched session:', fullSession);
+        setSelectedGitCommits(fullSession.gitCommits);
       })
       .catch((err) => {
         console.error('Error fetching session:', err);
@@ -127,11 +129,34 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
       otherRemarks: '',
       gitCommitIds: [],
       });
+
+      setSelectedGitCommits([]);
+      setAvailableGitCommits([]);
     }
   }, [selectedSession, mode]);
 
+  useEffect(() => {
+    const fetchCommits = async () => {
+      if (!selectedUser || !form.startTime || !open) return;
+  
+      try {
+        const commits = await gitCommitService.filter(undefined, selectedUser, dayjs(form.startTime));
+        setAvailableGitCommits(commits);
+      } catch (err) {
+        console.error('Failed to fetch Git commits', err);
+      }
+    };
+  
+    fetchCommits();
+  }, [form.startTime, selectedUser, open]);
+  
+  const mergedGitCommits = Array.from(
+    new Map([...availableGitCommits, ...selectedGitCommits].map(commit => [commit.id, commit])).values()
+  );
+
+
   const handleChange = (field: keyof WorkSessionFormValues, value: any) => {
-    console.log('handleChange', field, value);
+    console.log(`Updating field: ${field}, value: ${value}`);
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -324,9 +349,6 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           )}
         </FormGroup>
 
-
-
-
         <TextField
           label="Other Remarks"
           value={form.otherRemarks}
@@ -348,14 +370,13 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
 
         <Autocomplete
           multiple
-          options={availableGitCommits}
+          options={mergedGitCommits}
+          value={selectedGitCommits}
+          onChange={(_, value) => {
+            handleChange('gitCommitIds', value.map(v => v.id));
+            setSelectedGitCommits(value);
+          }}
           getOptionLabel={(option) => option.extCommitShortId}
-          value={availableGitCommits.filter(commit =>
-            form.gitCommitIds.includes(commit.id)
-          )}
-          onChange={(_, value) =>
-            handleChange('gitCommitIds', value.map((v) => v.id))
-          }
           isOptionEqualToValue={(option, value) => option.id === value.id}
           renderOption={(props, option) => (
             <li {...props} key={option.id}>
@@ -369,7 +390,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
                   <ListItemText
                     primary={
                       <span>
-                        <strong>{option.extCommitShortId}</strong>{' '}
+                        <strong>#{option.extCommitShortId}</strong>{' '}
                         <span style={{ color: '#666' }}>
                             {' - '}{option.title.length > 100
                             ? option.title.slice(0, 100) + '…'
@@ -377,7 +398,23 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
                         </span>
                       </span>
                     }
-                    secondary={option.repository?.title || 'Unknown Repository'}
+                    secondary={
+                      <div>
+                        <span style={{ color: '#888' }}>
+                            {(option.repository?.name || 'Unknown Repository').length > 40
+                              ? (option.repository?.name || 'Unknown Repository').slice(0, 40) + '…'
+                              : (option.repository?.name || 'Unknown Repository')}
+                        </span>
+                        <span style={{ color: '#888' }}>
+                          {' - '}
+                        </span>
+                        <span style={{ color: '#888' }}>
+                              {(option.author?.name || 'Unknown Author').length > 30
+                                ? (option.author?.name || 'Unknown Author').slice(0, 30) + '…'
+                                : (option.author?.name|| 'Unknown Author')}
+                          </span>
+                      </div>
+                    }
                   />
                 </Tooltip>
               </ListItem>
@@ -405,7 +442,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
                         <a href={option.webUrl} target="_blank" rel="noopener noreferrer">
                             <strong>
                               <span style={{ color: '#111' }}>
-                                {option.extCommitShortId}
+                                #{option.extCommitShortId}
                               </span>
                             </strong>
                         </a>
@@ -418,9 +455,9 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
                       <div>
                         <a href={option.repository?.webUrl} target="_blank" rel="noopener noreferrer">
                           <span style={{ color: '#888' }}>
-                              {(option.repository?.title || 'Unknown Repository').length > 30
-                                ? (option.repository?.title || 'Unknown Repository').slice(0, 30) + '…'
-                                : (option.repository?.title || 'Unknown Repository')}
+                              {(option.repository?.name || 'Unknown Repository').length > 50
+                                ? (option.repository?.name || 'Unknown Repository').slice(0, 50) + '…'
+                                : (option.repository?.name || 'Unknown Repository')}
                           </span>
                         </a>
                       </div>

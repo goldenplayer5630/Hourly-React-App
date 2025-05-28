@@ -24,14 +24,12 @@ export const workSessionService = {
     if (wbso == true) params.append('wbso', wbso.toString());
   
     const res = await fetch(`${API_BASE}/Filter?${params.toString()}`);
-    console.log(`${API_BASE}/Filter?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to filter work sessions');
     return res.json();
   },  
 
   getById: async (id: string): Promise<WorkSessionResponse> => {
     const res = await fetch(`${API_BASE}/${id}`);
-    console.log(`${API_BASE}/${id}`);
     if (!res.ok) throw new Error(`Work session ${id} not found`);
     return res.json();
   },
@@ -71,6 +69,7 @@ export const workSessionService = {
   
 
   update: async (id: string, payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
+    console.log('Updating work session with payload:', payload);
     const res = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },

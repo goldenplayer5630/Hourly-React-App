@@ -10,11 +10,12 @@ export interface GitCommitResponse {
   title: string;
   comment?: string | null;
   authorId: string;
+  authoredDate: string;
   webUrl: string;
   createdAt: string;
   updatedAt?: string | null;
 
   author: UserResponse | null;
-  repository: GitCommitResponse | null;
+  repository: GitRepositoryResponse | null;
   workSessions: WorkSessionResponse[];
 }
