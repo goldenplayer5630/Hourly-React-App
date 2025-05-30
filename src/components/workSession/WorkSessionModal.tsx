@@ -41,14 +41,14 @@ dayjs.locale('nl');
 type WorkSessionModalMode = 'create' | 'edit' | 'view';
 type TvtMode = 'none' | 'accrue' | 'use';
 
-interface CreateWorkSessionModalProps {
+type Props = {
   open: boolean;
   mode: WorkSessionModalMode;
   selectedSession?: WorkSessionResponse;
+  selectedUserContract: string;
+  selectedUser: string;
   onClose: () => void;
   onSubmit: () => void;
-  userContractId: string;
-  selectedUser: string;
 }
 
 interface WorkSessionFormValues {
@@ -65,14 +65,14 @@ interface WorkSessionFormValues {
   gitCommitIds: string[];
 }
 
-const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
+const WorkSessionModal: React.FC<Props> = ({
   open,
   mode,
   selectedSession,
   onClose,
   onSubmit,
-  userContractId,
-  selectedUser
+  selectedUser,
+  selectedUserContract
 }) => {
   const [form, setForm] = useState<WorkSessionFormValues>({
     taskDescription: '',
@@ -187,7 +187,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     } = form;
 
     const request: CreateWorkSessionRequest = {
-      userContractId: userContractId,
+      userContractId: selectedUserContract,
       taskDescription,
       startTime,
       endTime,

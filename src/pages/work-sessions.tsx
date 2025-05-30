@@ -135,7 +135,7 @@ const WorkSessionsPage = () => {
           refreshSessions();
         }}
         selectedUser={selectedUser}
-        userContractId={selectedUserContract}
+        selectedUserContract={selectedUserContract}
       />
     </div>
   );

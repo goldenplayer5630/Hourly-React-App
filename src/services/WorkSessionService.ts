@@ -67,9 +67,7 @@ export const workSessionService = {
     return res.json();
   },
   
-
   update: async (id: string, payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
-    console.log('Updating work session with payload:', payload);
     const res = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
