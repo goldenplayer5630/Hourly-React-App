@@ -18,6 +18,7 @@ export interface UserResponse {
   gitEmail?: string | null;
   gitUsername?: string | null;
   gitAccessToken?: string | null;
+  tvtHourBalance?: number | null;
 
   createdAt: string;
   updatedAt?: string | null;
