@@ -1,7 +1,8 @@
-import { RoleResponse } from './RoleResponse';
-import { DepartmentResponse } from './DepartmentResponse';
-import { WorkSessionResponse } from './WorkSessions/WorkSessionResponse';
-import { GitCommitResponse } from './GitCommitResponse';
+import { RoleResponse } from '../Roles/RoleResponse';
+import { DepartmentResponse } from '../Departments/DepartmentResponse';
+import { WorkSessionResponse } from '../WorkSessions/WorkSessionResponse';
+import { GitCommitResponse } from '../GitCommits/GitCommitResponse';
+import { UserContractResponse } from '../UserContracts/UserContractResponse';
 
 export interface UserResponse {
   id: string;
@@ -23,6 +24,6 @@ export interface UserResponse {
   createdAt: string;
   updatedAt?: string | null;
 
-  workSessions: WorkSessionResponse[];
   gitCommits: GitCommitResponse[];
+  userContracts: UserContractResponse[];
 }

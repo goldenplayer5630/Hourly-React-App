@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use } from 'react';
 import {
     Card,
     CardContent,
@@ -14,19 +14,23 @@ import {
     TextField
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { UserResponse } from '../../interfaces/UserResponse';
+import { UserResponse } from '../../interfaces/Users/UserResponse';
+import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 
 type Props = {
     selectedUser: string;
     selectedYear: number;
     selectedMonth: string;
+    selectedUserContract: string;
     onUserChange: (userId: string) => void;
+    onUserContractChange: (userContractId: string) => void;
     onYearChange: (year: number) => void;
     onMonthChange: (value: string) => void;
     wbsoOnly: boolean;
     onToggleWBSO: () => void;
     onAddWorkSession: () => void;
     users: UserResponse[];
+    userContracts: UserContractResponse[];
     availableYears: number[];
 };
 
@@ -50,13 +54,16 @@ const WorkSessionHeader: React.FC<Props> = ({
     selectedUser,
     selectedYear,
     selectedMonth,
+    selectedUserContract,
     onMonthChange,
     onYearChange,
     onUserChange,
+    onUserContractChange,
     wbsoOnly,
     onToggleWBSO,
     onAddWorkSession,
     users,
+    userContracts,
     availableYears
 }) => {
     return (
@@ -73,11 +80,25 @@ const WorkSessionHeader: React.FC<Props> = ({
                                 onChange={(_, newValue) => {
                                     if (newValue) onUserChange(newValue.id);
                                 }}
-                                renderInput={(params) => <TextField {...params} label="User" variant="outlined" fullWidth />}
+                                renderInput={(params) => <TextField {...params} label="Employee" variant="outlined" fullWidth />}
                             />
                         </FormControl>
                     </Grid>
                     <Grid size={{ xs: 6, md: 2 }} offset={{ xs: 3, md: 0 }}>
+                        <FormControl fullWidth size="small">
+                            <Autocomplete
+                                size="small"
+                                options={userContracts}
+                                getOptionLabel={(option) => option.name}
+                                value={userContracts.find((userContract) => userContract.id === selectedUserContract) || null}
+                                onChange={(_, newValue) => {
+                                    if (newValue) onUserContractChange(newValue.id);
+                                }}
+                                renderInput={(params) => <TextField {...params} label="Contract" variant="outlined" fullWidth />}
+                            />
+                        </FormControl>
+                    </Grid>
+                    <Grid size={{ xs: 4.5, md: 1.5 }} offset={{ xs: 3, md: 0 }}>
                         <FormControl fullWidth size="small">
                             <InputLabel id="year-select-label">Year</InputLabel>
                             <Select
@@ -111,13 +132,13 @@ const WorkSessionHeader: React.FC<Props> = ({
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 4, md: 2 }} offset={{ xs: 3, md: 0 }}>
+                    <Grid size={{ xs: 4, md: 1.5 }} offset={{ xs: 3, md: 0 }}>
                         <FormControlLabel
                             control={<Switch checked={wbsoOnly} onChange={onToggleWBSO} />}
                             label="WBSO only"
                         />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', justifyContent: 'flex-end' }} offset={{ md: 'auto' }}>
+                    <Grid size={{ xs: 10, md: 3 }} sx={{ display: 'flex', justifyContent: 'flex-end' }} offset={{ md: 'auto' }}>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}

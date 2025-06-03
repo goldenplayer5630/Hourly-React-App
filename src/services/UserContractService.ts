@@ -1,40 +1,40 @@
-import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
-import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
+import { CreateUserContract } from "../interfaces/UserContracts/CreateUserContract";
+import { UserContractResponse } from "../interfaces/UserContracts/UserContractResponse";
 
-const API_BASE = 'https://localhost:7280/api/WorkSession';
+const API_BASE = 'https://localhost:7280/api/UserContract';
 
-export const workSessionService = {
-  getAll: async (): Promise<WorkSessionResponse[]> => {
+export const userContractService = {
+
+  getAll: async (): Promise<UserContractResponse[]> => {
     const res = await fetch(API_BASE);
     if (!res.ok) throw new Error('Failed to fetch work sessions');
     return res.json();
   },
 
   filter: async (
-    userContractId?: string,
+    userId?: string,
     year?: number,
-    month?: number,
-    wbso?: boolean
-  ): Promise<WorkSessionResponse[]> => {
+    month?: number
+  ): Promise<UserContractResponse[]> => {
     const params = new URLSearchParams();
   
-    if (userContractId) params.append('userContractId', userContractId);
+    if (userId) params.append('userId', userId);
     if (year !== undefined) params.append('year', year.toString());
     if (month !== undefined) params.append('month', month.toString());
-    if (wbso == true) params.append('wbso', wbso.toString());
   
     const res = await fetch(`${API_BASE}/Filter?${params.toString()}`);
-    if (!res.ok) throw new Error('Failed to filter work sessions');
+    console.log(`${API_BASE}/Filter?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to filter user contracts');
     return res.json();
   },  
 
-  getById: async (id: string): Promise<WorkSessionResponse> => {
+  getById: async (id: string): Promise<UserContractResponse> => {
     const res = await fetch(`${API_BASE}/${id}`);
     if (!res.ok) throw new Error(`Work session ${id} not found`);
     return res.json();
   },
 
-  create: async (payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
+  create: async (id: string, payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -66,8 +66,8 @@ export const workSessionService = {
   
     return res.json();
   },
-  
-  update: async (id: string, payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
+
+  update: async (id: string, payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
     const res = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -105,20 +105,4 @@ export const workSessionService = {
     });
     if (!res.ok) throw new Error(`Failed to delete work session ${id}`);
   },
-
-  addGitCommit: async (workSessionId: string, gitCommitId: string): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${workSessionId}/AddGitCommit/${gitCommitId}`, {
-      method: 'POST',
-    });
-    if (!res.ok) throw new Error('Failed to add Git commit');
-    return res.json();
-  },
-
-  removeGitCommit: async (workSessionId: string, gitCommitId: string): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${workSessionId}/RemoveGitCommit/${gitCommitId}`, {
-      method: 'POST',
-    });
-    if (!res.ok) throw new Error('Failed to remove Git commit');
-    return res.json();
-  },
-};
+}

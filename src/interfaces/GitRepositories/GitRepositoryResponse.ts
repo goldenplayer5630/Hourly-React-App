@@ -1,4 +1,4 @@
-export interface GitRepository {
+export interface GitRepositoryResponse {
     id: string;
     extRepositoryId: string;
     name: string;

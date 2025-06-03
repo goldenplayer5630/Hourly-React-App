@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Avatar,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -17,8 +18,12 @@ import {
   InputLabel,
   FormGroup,
   Radio,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Tooltip,
 } from '@mui/material';
-import { GitCommitResponse } from '../../interfaces/GitCommitResponse';
+import { GitCommitResponse } from '../../interfaces/GitCommits/GitCommitResponse';
 import { CreateWorkSessionRequest } from '../../interfaces/WorkSessions/CreateWorkSessionRequest';
 import { workSessionService } from '../../services/WorkSessionService';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -28,21 +33,22 @@ import { WorkSessionResponse } from '../../interfaces/WorkSessions/WorkSessionRe
 import Notification from '../Common/Notification';
 import dayjs from 'dayjs';
 import 'dayjs/locale/nl';
-import { Padding } from '@mui/icons-material';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import { gitCommitService } from '../../services/GitCommitService';
 
 dayjs.locale('nl');
 
 type WorkSessionModalMode = 'create' | 'edit' | 'view';
 type TvtMode = 'none' | 'accrue' | 'use';
 
-interface CreateWorkSessionModalProps {
+type Props = {
   open: boolean;
   mode: WorkSessionModalMode;
   selectedSession?: WorkSessionResponse;
+  selectedUserContract: string;
+  selectedUser: string;
   onClose: () => void;
   onSubmit: () => void;
-  availableGitCommits: GitCommitResponse[];
-  userId: string;
 }
 
 interface WorkSessionFormValues {
@@ -52,21 +58,21 @@ interface WorkSessionFormValues {
   factor: number;
   breakTime: number;
   wbso: boolean;
-  tvtMode: string;
+  tvtMode: TvtMode;
   tvtAccruedHours: number;
   tvtUsedHours: number;
   otherRemarks?: string;
   gitCommitIds: string[];
 }
 
-const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
+const WorkSessionModal: React.FC<Props> = ({
   open,
   mode,
   selectedSession,
   onClose,
   onSubmit,
-  availableGitCommits,
-  userId,
+  selectedUser,
+  selectedUserContract
 }) => {
   const [form, setForm] = useState<WorkSessionFormValues>({
     taskDescription: '',
@@ -83,41 +89,73 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
   });
 
   const [notification, setNotification] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
+  const [availableGitCommits, setAvailableGitCommits] = useState<GitCommitResponse[]>([]);
+  const [selectedGitCommits, setSelectedGitCommits] = useState<GitCommitResponse[]>([]);
 
   useEffect(() => {
     if (selectedSession) {
-      setForm({
-        taskDescription: selectedSession.taskDescription,
-        startTime: new Date(selectedSession.startTime),
-        endTime: new Date(selectedSession.endTime),
-        factor: selectedSession.factor,
-        breakTime: selectedSession.breakTime,
-        wbso: selectedSession.wbso ?? false,
-        tvtMode: selectedSession.tvtAccruedHours > 0 ? 'accrue' : selectedSession.tvtUsedHours > 0 ? 'use' : 'none',
-        tvtAccruedHours: selectedSession.tvtAccruedHours,
-        tvtUsedHours: selectedSession.tvtUsedHours,
-        otherRemarks: selectedSession.otherRemarks ?? '',
-        gitCommitIds: selectedSession.gitCommits.map(commit => commit.id),
+      workSessionService.getById(selectedSession.id)
+      .then((fullSession) => {
+        setForm({
+        taskDescription: fullSession.taskDescription,
+        startTime: new Date(fullSession.startTime),
+        endTime: new Date(fullSession.endTime),
+        factor: fullSession.factor,
+        breakTime: fullSession.breakTime,
+        wbso: fullSession.wbso ?? false,
+        tvtMode: fullSession.tvtAccruedHours > 0 ? 'accrue' : fullSession.tvtUsedHours > 0 ? 'use' : 'none',
+        tvtAccruedHours: fullSession.tvtAccruedHours,
+        tvtUsedHours: fullSession.tvtUsedHours,
+        otherRemarks: fullSession.otherRemarks ?? '',
+        gitCommitIds: fullSession.gitCommits.map(commit => commit.id),
+        });
+
+        setSelectedGitCommits(fullSession.gitCommits);
+      })
+      .catch((err) => {
+        console.error('Error fetching session:', err);
       });
     } else if (mode === 'create') {
       setForm({
-        taskDescription: '',
-        startTime: new Date(),
-        endTime: new Date(),
-        factor: 1.0,
-        breakTime: 0,
-        wbso: false,
-        tvtMode: 'none',
-        tvtAccruedHours: 0,
-        tvtUsedHours: 0,
-        otherRemarks: '',
-        gitCommitIds: [],
+      taskDescription: '',
+      startTime: new Date(),
+      endTime: new Date(),
+      factor: 1.0,
+      breakTime: 0,
+      wbso: false,
+      tvtMode: 'none',
+      tvtAccruedHours: 0,
+      tvtUsedHours: 0,
+      otherRemarks: '',
+      gitCommitIds: [],
       });
+
+      setSelectedGitCommits([]);
+      setAvailableGitCommits([]);
     }
   }, [selectedSession, mode]);
 
+  useEffect(() => {
+    const fetchCommits = async () => {
+      if (!selectedUser || !form.startTime || !open) return;
+  
+      try {
+        const commits = await gitCommitService.filter(undefined, selectedUser, dayjs(form.startTime));
+        setAvailableGitCommits(commits);
+      } catch (err) {
+        console.error('Failed to fetch Git commits', err);
+      }
+    };
+  
+    fetchCommits();
+  }, [form.startTime, selectedUser, open]);
+  
+  const mergedGitCommits = Array.from(
+    new Map([...availableGitCommits, ...selectedGitCommits].map(commit => [commit.id, commit])).values()
+  );
+
+
   const handleChange = (field: keyof WorkSessionFormValues, value: any) => {
-    console.log('handleChange', field, value);
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -149,7 +187,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
     } = form;
 
     const request: CreateWorkSessionRequest = {
-      userId,
+      userContractId: selectedUserContract,
       taskDescription,
       startTime,
       endTime,
@@ -239,8 +277,9 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           <InputLabel>Break Time</InputLabel>
           <Select
             label="Break Time"
+            disabled={mode === 'view'}
             value={formatTime(form.breakTime)}
-            onChange={(e) => handleChange('tvtAccruedHours', convertToFloat(e.target.value.toString()))}
+            onChange={(e) => handleChange('breakTime', convertToFloat(e.target.value.toString()))}
           >
             {Array.from(Array(5).keys()).map(i => (
               <MenuItem key={i} value={formatTime((i * 0.25))}>{formatTime((i * 0.25))}</MenuItem>
@@ -282,6 +321,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
             <Select
               label="TVT Accrued Hours"
               value={formatTime(form.tvtAccruedHours)}
+              disabled={mode === 'view'}
               onChange={(e) => handleChange('tvtAccruedHours', convertToFloat(e.target.value.toString()))}
             >
               {Array.from(Array(33).keys()).map(i => (
@@ -297,6 +337,7 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
             <Select
               label="TVT Used Hours"
               value={formatTime(form.tvtUsedHours)}
+              disabled={mode === 'view'}
               onChange={(e) => handleChange('tvtUsedHours', convertToFloat(e.target.value.toString()))}
             >
               {Array.from(Array(33).keys()).map(i => (
@@ -306,9 +347,6 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
           </FormControl>
           )}
         </FormGroup>
-
-
-
 
         <TextField
           label="Other Remarks"
@@ -331,15 +369,108 @@ const WorkSessionModal: React.FC<CreateWorkSessionModalProps> = ({
 
         <Autocomplete
           multiple
-          options={availableGitCommits}
-          getOptionLabel={(option) => option.title}
-          value={availableGitCommits.filter(commit => form.gitCommitIds.includes(commit.id))}
-          onChange={(_, value) => handleChange('gitCommitIds', value.map((v) => v.id))}
-          renderInput={(params) => (
-            <TextField {...params} label="Git Commits" placeholder="Select commits" />
+          options={mergedGitCommits}
+          value={selectedGitCommits}
+          onChange={(_, value) => {
+            handleChange('gitCommitIds', value.map(v => v.id));
+            setSelectedGitCommits(value);
+          }}
+          getOptionLabel={(option) => option.extCommitShortId}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          renderOption={(props, option) => (
+            <li {...props} key={option.id}>
+              <ListItem disablePadding>
+                <ListItemAvatar>
+                  <Avatar sx={{ width: 24, height: 24 }}>
+                    <GitHubIcon fontSize="small" />
+                  </Avatar>
+                </ListItemAvatar>
+                <Tooltip title={option.title}>
+                  <ListItemText
+                    primary={
+                      <span>
+                        <strong>#{option.extCommitShortId}</strong>{' '}
+                        <span style={{ color: '#666' }}>
+                            {' - '}{option.title.length > 100
+                            ? option.title.slice(0, 100) + '…'
+                            : option.title}
+                        </span>
+                      </span>
+                    }
+                    secondary={
+                      <div>
+                        <span style={{ color: '#888' }}>
+                            {(option.repository?.name || 'Unknown Repository').length > 40
+                              ? (option.repository?.name || 'Unknown Repository').slice(0, 40) + '…'
+                              : (option.repository?.name || 'Unknown Repository')}
+                        </span>
+                        <span style={{ color: '#888' }}>
+                          {' - '}
+                        </span>
+                        <span style={{ color: '#888' }}>
+                              {(option.author?.name || 'Unknown Author').length > 30
+                                ? (option.author?.name || 'Unknown Author').slice(0, 30) + '…'
+                                : (option.author?.name|| 'Unknown Author')}
+                          </span>
+                      </div>
+                    }
+                  />
+                </Tooltip>
+              </ListItem>
+            </li>
           )}
+            renderValue={(selected, getTagProps) =>
+              selected.map((option, index) => (
+                <Tooltip key={option.id} title={option.title}>
+                  <span
+                    {...getTagProps({ index })}
+                    style={{
+                      backgroundColor: '#f1f1f1',
+                      padding: '4px 8px',
+                      margin: '2px',
+                      borderRadius: '4px',
+                      display: 'inline-block',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    <div>
+                      <div>
+                        <a href={option.webUrl} target="_blank" rel="noopener noreferrer">
+                            <strong>
+                              <span style={{ color: '#111' }}>
+                                #{option.extCommitShortId}
+                              </span>
+                            </strong>
+                        </a>
+                        <span style={{ color: '#555' }}>
+                           {' - '}{option.title.length > 40
+                            ? option.title.slice(0, 40) + '…'
+                            : option.title}
+                        </span>
+                      </div>
+                      <div>
+                        <a href={option.repository?.webUrl} target="_blank" rel="noopener noreferrer">
+                          <span style={{ color: '#888' }}>
+                              {(option.repository?.name || 'Unknown Repository').length > 50
+                                ? (option.repository?.name || 'Unknown Repository').slice(0, 50) + '…'
+                                : (option.repository?.name || 'Unknown Repository')}
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+                  </span>
+                </Tooltip>
+              ))
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="Git Commits" placeholder="Select commits" />
+            )}
           disabled={mode === 'view'}
         />
+
       </DialogContent>
 
       <DialogActions>

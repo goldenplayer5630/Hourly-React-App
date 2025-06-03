@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import { workSessionService } from '../services/WorkSessionService';
-import { GitCommitResponse } from '../interfaces/GitCommitResponse';
+import { GitCommitResponse } from '../interfaces/GitCommits/GitCommitResponse';
 import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
 import WorkSessionList from '../components/WorkSession/WorkSessionList';
 import WorkSessionHeader from '../components/WorkSession/WorkSessionHeader';
 import { userService } from '../services/UserService';
-import { UserResponse } from '../interfaces/UserResponse';
+import { UserResponse } from '../interfaces/Users/UserResponse';
 import { gitCommitService } from '../services/GitCommitService';
 import WorkSessionModal from '../components/WorkSession/WorkSessionModal';
+import { userContractService } from '../services/UserContractService';
+import { UserContractResponse } from '../interfaces/UserContracts/UserContractResponse';
 
-const WorkSessionPage = () => {
+const WorkSessionsPage = () => {
   const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
   const [users, setUsers] = useState<UserResponse[]>([]);
+  const [userContracts, setUserContracts] = useState<UserContractResponse[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
+  const [selectedUserContract,  setSelectedUserContract] = useState<string>('');
   const [selectedMonth, setSelectedMonth] = useState<string>(
     String(new Date().getMonth() + 1).padStart(2, '0')
   );
@@ -58,10 +62,10 @@ const WorkSessionPage = () => {
   };
 
   const refreshSessions = () => {
-    if (!selectedUser) return;
+    if (!selectedUserContract) return;
 
     workSessionService
-      .filter(selectedUser, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
+      .filter(selectedUserContract, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
       .then(setSessions)
       .catch(console.error);
   };
@@ -70,14 +74,26 @@ const WorkSessionPage = () => {
     userService.getAll()
       .then(setUsers)
       .catch((err) => console.error('Error fetching users:', err));
+
   }, []);
 
   useEffect(() => {
-    refreshSessions();
-  }, [selectedUser, selectedYear, selectedMonth, wbsoOnly]);
+    if (!selectedUser) return;
+
+    userContractService.filter(selectedUser, undefined, undefined)
+      .then(setUserContracts)
+      .catch((err) => console.error('Error fetching user contracts:', err));
+
+  }, [selectedUser]);
 
   useEffect(() => {
-    gitCommitService.getAll()
+    refreshSessions();
+  }, [selectedUserContract, selectedYear, selectedMonth, wbsoOnly]);
+
+  useEffect(() => {
+    if (!selectedUser) return;
+
+    gitCommitService.filter()
       .then(setGitCommits);
   }, []);
 
@@ -88,13 +104,16 @@ const WorkSessionPage = () => {
         selectedUser={selectedUser}
         selectedYear={selectedYear}
         selectedMonth={selectedMonth}
+        selectedUserContract={selectedUserContract}
         onUserChange={setSelectedUser}
+        onUserContractChange={setSelectedUserContract}
         onYearChange={setSelectedYear}
         onMonthChange={setSelectedMonth}
         wbsoOnly={wbsoOnly}
         onToggleWBSO={() => setWbsoOnly((prev) => !prev)}
         onAddWorkSession={handleAddWorkSession}
         users={users}
+        userContracts={userContracts}
         availableYears={getAvailableYears()}
       />
       
@@ -115,11 +134,11 @@ const WorkSessionPage = () => {
           setOpenModal(false);
           refreshSessions();
         }}
-        availableGitCommits={gitCommits}
-        userId={selectedUser}
+        selectedUser={selectedUser}
+        selectedUserContract={selectedUserContract}
       />
     </div>
   );
 };
 
-export default WorkSessionPage;
+export default WorkSessionsPage;
