@@ -53,118 +53,115 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
     tvtAccruedHours,
     tvtUsedHours,
     locked,
-    userContract,
-    createdAt,
-    updatedAt,
   } = session;
 
   return (
     <Card variant="outlined" sx={{ mb: 2 }}>
       <CardContent>
-      <Grid container alignItems="center" sx={{ mb: 1 }}>
-        {/* Task */}
-        <Grid size={10} >
-          <Typography variant="subtitle2" color="text.secondary">
-            {"Task:"}
-          </Typography>
-          <Typography variant="body1">
-          {truncate(taskDescription, 300)}
-          </Typography>
+        <Grid container alignItems="center" sx={{ mb: 1 }}>
+          {/* Task */}
+          <Grid size={12} >
+            <Typography variant="subtitle2" color="text.secondary">
+              {"Task:"}
+            </Typography>
+            <Typography variant="body1">
+            {truncate(taskDescription, 300)}
+            </Typography>
+          </Grid>
         </Grid>
 
-        <Grid size={2} >
-        <Box display="flex" justifyContent="flex-end" gap={1}>
-        <Tooltip title="View">
-          <RemoveRedEye onClick={() => onView(session)} sx={{ cursor: 'pointer' }} />
-        </Tooltip>
+        {/* Row */}
+        <Grid container alignItems="center" sx={{ mb: 1 }}>
+          {/* Start - End */}
+          <Grid size={3} >
+            <Typography variant="subtitle2" color="text.secondary">
+              {"Start - End:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {`${formatDate(startTime)} - ${formatDate(endTime)}`}
+            </Typography>
+          </Grid>
 
-        <Tooltip title="Edit">
-          <Edit onClick={() => onEdit(session)} sx={{ cursor: 'pointer' }} />
-        </Tooltip>
+          <Grid size={3}  ></Grid>
 
-        <Tooltip title="Delete">
-          <Delete onClick={() => onDelete(session)} sx={{ cursor: 'pointer' }} />
-        </Tooltip>
-        </Box>
-      </Grid>
-      </Grid>
-
-
-
-      <Grid container alignItems="center" sx={{ mb: 1 }}>
-        <Grid size={6} >
-          <Typography variant="subtitle2" color="text.secondary">
-            {"Start - End:"}
-          </Typography>
-          <Typography variant="h6" color="text.black">
-            {`${formatDate(startTime)} - ${formatDate(endTime)}`}
-          </Typography>
-        </Grid>
-
-        <Grid size={1}  >
-            {/* WBSO */}
-            <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-              {wbso && <Chip label="WBSO" color="secondary" size="small" />}
-            </Box>
-        </Grid>
+          {/* WBSO */}
+          <Grid size={1}  >
+              <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+                {wbso && <Chip label="WBSO" color="secondary" size="medium" />}
+              </Box>
+          </Grid>
         
-
-        <Grid size={5} sx={{ marginLeft: 'auto' }}>
-          <Box display="flex" justifyContent="flex-end" gap={2}>
-            {/* Factor */}
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
+          {/* Factor */}
+          <Grid size={1}>
+            <Typography variant="subtitle2" color="text.secondary">
             {"Factor:"}
-              </Typography>
-              <Typography variant="h6" color="text.black">
-                x{factor.toFixed(2)}
-              </Typography>
-            </Box>
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              x{factor.toFixed(2)}
+            </Typography>
+          </Grid>
 
-            {/* Break hours */}
-            {breakTime > 0 && <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                {"Break hours:"}
-              </Typography>
-              <Typography variant="h6" color="text.black">
-                {formatTime(breakTime)}
-              </Typography>
-            </Box>}
+          {/* Break hours */}
+          {breakTime > 0 && <Grid size={1}>
+            <Typography variant="subtitle2" color="text.secondary">
+              {"Break hours:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatTime(breakTime)}
+            </Typography>
+          </Grid>}
 
-            {/* Total effective hours */}
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
+          {/* Total effective hours */}
+          <Grid size={1}>
+            <Typography variant="subtitle2" color="text.secondary">
                 {"Effective hours:"}
               </Typography>
               <Typography variant="h6" color="text.black">
                 {formatTime(rawEffectiveHours)}
-              </Typography>
-            </Box>
+            </Typography>
+          </Grid>
 
-            {/* TVT hours */}
-            {(tvtAccruedHours > 0 || tvtUsedHours > 0) &&
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-                {`${tvtAccruedHours > 0 ? `T4T accrued:` : tvtUsedHours > 0 ? `T4T used:` : ''}`}
-              </Typography>
-              <Typography variant="h6" color="text.black">
-                {tvtAccruedHours > 0 ? `${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `${formatTime(tvtUsedHours)}` : ''}
-              </Typography>
-            </Box>}
+          {/* TVT hours */}
+          {(tvtAccruedHours > 0 || tvtUsedHours > 0) &&
+          <Grid size={1}>
+            <Typography variant="subtitle2" color="text.secondary">
+              {`${tvtAccruedHours > 0 ? `T4T accrued:` : tvtUsedHours > 0 ? `T4T used:` : ''}`}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {tvtAccruedHours > 0 ? `${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `${formatTime(tvtUsedHours)}` : ''}
+            </Typography>
+          </Grid>}
 
-            {/* Net effective hours */}
-            <Box>
-              <Typography variant="subtitle2" color="text.secondary">
-          {"Net total hours:"}
-              </Typography>
-              <Typography variant="h6" color="text.black">
-          {formatTime(netEffectiveHours)}
-              </Typography>
+          {/* Net effective hours */}
+          <Grid size={1}>
+            <Typography variant="subtitle2" color="text.secondary">
+              {"Net total hours:"}
+            </Typography>
+            <Typography variant="h6" color="text.black">
+              {formatTime(netEffectiveHours)}
+            </Typography>
+          </Grid>
+
+          {/* Actions */}
+          <Grid size={1} >
+            <Box display="flex" justifyContent="flex-end" gap={1}>
+            <Tooltip title="View">
+              <RemoveRedEye onClick={() => onView(session)} sx={{ cursor: 'pointer' }} />
+            </Tooltip>
+
+            <Tooltip title="Edit">
+              <Edit onClick={() => onEdit(session)} sx={{ cursor: 'pointer' }} />
+            </Tooltip>
+
+            <Tooltip title="Delete">
+              <Delete onClick={() => onDelete(session)} sx={{ cursor: 'pointer' }} />
+            </Tooltip>
             </Box>
-          </Box>
+          </Grid>
+
         </Grid>
-      </Grid>
 
+        {/*  Other remarks */}
         {otherRemarks && (
         <Grid container alignItems="center">
           <Grid size={8} >

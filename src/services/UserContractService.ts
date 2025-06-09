@@ -34,7 +34,7 @@ export const userContractService = {
     return res.json();
   },
 
-  create: async (id: string, payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
+  create: async (payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
     const res = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
