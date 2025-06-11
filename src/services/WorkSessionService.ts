@@ -99,6 +99,38 @@ export const workSessionService = {
     return res.json();
   },
 
+  updateLock: async (id: string, locked: boolean): Promise<WorkSessionResponse> => {
+    const res = await fetch(`${API_BASE}/${id}?locked=${locked}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: null,
+    });
+
+    if (!res.ok) {
+      // Try to parse the response body (assuming it's JSON)
+      const contentType = res.headers.get('Content-Type');
+      let errorMessage = res.statusText;
+  
+      if (contentType?.includes('application/json')) {
+        const body = await res.json().catch(() => null);
+        if (body?.errors) {
+          // Get first error message from model state
+          const firstError = Object.values(body.errors).flat()[0];
+          if (firstError) errorMessage = String(firstError);
+        } else if (body?.message) {
+          errorMessage = body.message;
+        }
+      } else {
+        // fallback to plain text if JSON fails
+        const text = await res.text().catch(() => '');
+        if (text) errorMessage = text;
+      }
+  
+      throw new Error(errorMessage);
+    }
+    return res.json();
+  },
+
   delete: async (id: string): Promise<void> => {
     const res = await fetch(`${API_BASE}/${id}`, {
       method: 'DELETE',

@@ -22,6 +22,7 @@ import ContractType from '../../enums/ContractType';
 import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 import { CreateUserContract } from '../../interfaces/UserContracts/CreateUserContract';
 import { userContractService } from '../../services/UserContractService';
+import Notification from '../Common/Notification';
 
 type UserContractModalMode = 'create' | 'edit' | 'view';
 
@@ -156,12 +157,13 @@ const UserContractModal: React.FC<Props> = ({
       setNotification({ message: 'Work session saved successfully!', severity: 'success' });
       onSubmit();
     } catch (err: any) {
-      const message = err?.message|| 'Failed to save work session';
+      const message = err?.message || 'Failed to save work session';
       setNotification({ message, severity: 'error' });
     }
   };
 
   return (
+    <div>
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>
         {mode === 'view' && 'View User Contract'}
@@ -182,7 +184,7 @@ const UserContractModal: React.FC<Props> = ({
           <InputLabel>Contract Type</InputLabel>
           <Select
             value={form.contractType}
-            onChange={(e) => handleChange('contractType', e.target.value as ContractType)}
+            onChange={(e) => handleChange('contractType', Number(e.target.value) as ContractType)}
             disabled={mode === 'view'}
           >
             {Object.entries(contractTypeOptions).map(([key, label]) => (
@@ -290,6 +292,9 @@ const UserContractModal: React.FC<Props> = ({
         )}
       </DialogActions>
     </Dialog>
+
+    <Notification notification={notification} onClose={() => setNotification(null)} />
+    </div>
   );
 };
 

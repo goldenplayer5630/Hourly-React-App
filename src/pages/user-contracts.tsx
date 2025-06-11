@@ -6,6 +6,7 @@ import { userService } from '../services/UserService';
 import UserContractHeader from '../components/UserContract/UserContractHeader';
 import UserContractList from '../components/UserContract/UserContractList';
 import UserContractModal from '../components/UserContract/UserContractModal';
+import Notification, { NotificationState } from '../components/Common/Notification';
 
 const UserContractsPage = () => {
     const [users, setUsers] = useState<UserResponse[]>([]);
@@ -14,6 +15,7 @@ const UserContractsPage = () => {
     const [selectedUserContract,  setSelectedUserContract] = useState<UserContractResponse | undefined>();
     const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
     const [openModal, setOpenModal] = useState<boolean>(false);
+    const [notification, setNotification] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
     
     const handleAddUserContract = () => {
         setModalMode('create');
@@ -39,23 +41,23 @@ const UserContractsPage = () => {
             .then(() => {
             setUserContracts((prev) => prev.filter((s) => s.id !== userContract.id));
             })
-            .catch(console.error);
+            .catch((err) => {setNotification({ message: 'Error deleting user contract', severity: 'error' })});
         }
     };
 
     const refreshUserContract = () => {
-        if (!selectedUserContract) return;
+        if (!selectedUser) return;
 
         userContractService
             .filter(selectedUser, undefined, undefined)
             .then(setUserContracts)
-            .catch(console.error);
+            .catch((err) => {setNotification({ message: 'Error fetching user contracts', severity: 'error' })});
     };
     
     useEffect(() => {
     userService.getAll()
         .then(setUsers)
-        .catch((err) => console.error('Error fetching users:', err));
+        .catch((err) => setNotification({ message: 'Error fetching users', severity: 'error' }));
 
     }, []);
 
@@ -64,7 +66,7 @@ const UserContractsPage = () => {
 
     userContractService.filter(selectedUser, undefined, undefined)
         .then(setUserContracts)
-        .catch((err) => console.error('Error fetching user contracts:', err));
+        .catch((err) => setNotification({ message: 'Error fetching user contracts', severity: 'error' }));
 
     }, [selectedUser]);
 
@@ -97,10 +99,12 @@ const UserContractsPage = () => {
             selectedUser={selectedUser}
             onClose={() => setOpenModal(false)}
             onSubmit={() => {
-            setOpenModal(false);
+                setOpenModal(false);
                 refreshUserContract();
             }}
             />
+
+        <Notification notification={notification} onClose={() => setNotification(null)} />
         </div>
     );
 }

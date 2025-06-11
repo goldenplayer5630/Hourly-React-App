@@ -10,6 +10,8 @@ import { gitCommitService } from '../services/GitCommitService';
 import WorkSessionModal from '../components/WorkSession/WorkSessionModal';
 import { userContractService } from '../services/UserContractService';
 import { UserContractResponse } from '../interfaces/UserContracts/UserContractResponse';
+import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
+import Notification, { NotificationState } from '../components/Common/Notification';
 
 const WorkSessionsPage = () => {
   const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
@@ -26,6 +28,7 @@ const WorkSessionsPage = () => {
   const [gitCommits, setGitCommits] = useState<GitCommitResponse[]>([]);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [selectedSession, setSelectedSession] = useState<WorkSessionResponse | undefined>();
+  const [notification, setNotification] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
 
 
   const getAvailableYears = () => {
@@ -39,6 +42,59 @@ const WorkSessionsPage = () => {
     setOpenModal(true);
   };
 
+  const handleLockSessions = (lock: boolean) => {
+    if (lock) {
+      if (!window.confirm('Are you sure you want to lock all sessions for this month?')) return;
+    } else {
+      if (!window.confirm('Are you sure you want to unlock all sessions for this month?')) return;
+    }
+  
+    const targetMonth = parseInt(selectedMonth, 10) - 1;
+  
+    const sessionsToLock = sessions.filter((session) => {
+      const start = new Date(session.startTime);
+
+      if (lock) {
+        return (
+          start.getFullYear() === selectedYear &&
+          start.getMonth() === targetMonth &&
+          !session.locked
+        );
+      } else {
+        return (
+          start.getFullYear() === selectedYear &&
+          start.getMonth() === targetMonth &&
+          session.locked
+        );
+      }
+    });
+  
+    if (sessionsToLock.length === 0) {
+      setNotification({
+        message: 'No sessions to lock/unlock for the selected month.',
+        severity: 'error',
+      });
+      return;
+    }
+  
+    sessionsToLock.forEach((session) => {
+      workSessionService
+        .updateLock(session.id, lock)
+        .then(() => {
+          setSessions((prev) =>
+            prev.map((s) => (s.id === session.id ? { ...s, locked: lock } : s))
+          );
+        })
+        .catch((err) => {
+          setNotification({
+            message: `Error locking session ${session.id}: ${err.message}`,
+            severity: 'error',
+          });
+        });
+      });
+  };
+  
+  
   const handleEditWorkSession = (session: WorkSessionResponse) => {
     setModalMode('edit');
     setSelectedSession(session);
@@ -57,7 +113,12 @@ const WorkSessionsPage = () => {
         .then(() => {
           setSessions((prev) => prev.filter((s) => s.id !== session.id));
         })
-        .catch(console.error);
+        .catch((err) => {
+          setNotification({
+            message: `Error deleting session: ${err.message}`,
+            severity: 'error',
+          });
+        });
     }
   };
 
@@ -67,13 +128,21 @@ const WorkSessionsPage = () => {
     workSessionService
       .filter(selectedUserContract, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
       .then(setSessions)
-      .catch(console.error);
+      .catch((err) => {
+        setNotification({
+          message: 'Error fetching work sessions',
+          severity: 'error',
+        });
+      });
   };
 
   useEffect(() => {
     userService.getAll()
       .then(setUsers)
-      .catch((err) => console.error('Error fetching users:', err));
+      .catch((err) => setNotification({
+        message: 'Error fetching users',
+        severity: 'error',
+      }));
 
   }, []);
 
@@ -82,7 +151,10 @@ const WorkSessionsPage = () => {
 
     userContractService.filter(selectedUser, undefined, undefined)
       .then(setUserContracts)
-      .catch((err) => console.error('Error fetching user contracts:', err));
+      .catch((err) => setNotification({
+        message: 'Error fetching user contracts',
+        severity: 'error',
+      }));
 
   }, [selectedUser]);
 
@@ -112,6 +184,8 @@ const WorkSessionsPage = () => {
         wbsoOnly={wbsoOnly}
         onToggleWBSO={() => setWbsoOnly((prev) => !prev)}
         onAddWorkSession={handleAddWorkSession}
+        onLockSessions={() => handleLockSessions(true)}
+        onUnlockSessions={() => handleLockSessions(false)}
         users={users}
         userContracts={userContracts}
         availableYears={getAvailableYears()}
@@ -137,6 +211,8 @@ const WorkSessionsPage = () => {
         selectedUser={selectedUser}
         selectedUserContract={selectedUserContract}
       />
+
+    <Notification notification={notification} onClose={() => setNotification(null)} />
     </div>
   );
 };

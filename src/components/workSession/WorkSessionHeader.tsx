@@ -11,8 +11,11 @@ import {
     Switch,
     FormControlLabel,
     Autocomplete,
-    TextField
+    TextField,
+    Box
 } from '@mui/material';
+import LockOutlineIcon from '@mui/icons-material/LockOutline';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AddIcon from '@mui/icons-material/Add';
 import { UserResponse } from '../../interfaces/Users/UserResponse';
 import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
@@ -29,6 +32,8 @@ type Props = {
     wbsoOnly: boolean;
     onToggleWBSO: () => void;
     onAddWorkSession: () => void;
+    onLockSessions: () => void;
+    onUnlockSessions: () => void;
     users: UserResponse[];
     userContracts: UserContractResponse[];
     availableYears: number[];
@@ -62,6 +67,8 @@ const WorkSessionHeader: React.FC<Props> = ({
     wbsoOnly,
     onToggleWBSO,
     onAddWorkSession,
+    onLockSessions,
+    onUnlockSessions,
     users,
     userContracts,
     availableYears
@@ -132,13 +139,30 @@ const WorkSessionHeader: React.FC<Props> = ({
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 4, md: 1.5 }} offset={{ xs: 3, md: 0 }}>
+                    <Grid size={{ xs: 4, md: 1 }} offset={{ xs: 3, md: 0 }}>
                         <FormControlLabel
                             control={<Switch checked={wbsoOnly} onChange={onToggleWBSO} />}
                             label="WBSO only"
                         />
                     </Grid>
-                    <Grid size={{ xs: 10, md: 3 }} sx={{ display: 'flex', justifyContent: 'flex-end' }} offset={{ md: 'auto' }}>
+                    <Grid size={{ xs: 10, md: 3.5 }} sx={{ display: 'flex', justifyContent: 'flex-end' }} offset={{ md: 'auto' }}>
+                        <Box display="flex" justifyContent="flex-end" gap={1}>
+                        <Button
+                            variant="contained"
+                            startIcon={<LockOutlineIcon />}
+                            onClick={onLockSessions}
+                            disabled={!selectedUserContract}
+                        >
+                            Lock sessions
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<LockOpenIcon/>}
+                            onClick={onUnlockSessions}
+                            disabled={!selectedUserContract}
+                        >
+                            Unlock sessions
+                        </Button>
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
@@ -146,6 +170,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                         >
                             Add Work Session
                         </Button>
+                        </Box>
                     </Grid>
                 </Grid>
             </CardContent>

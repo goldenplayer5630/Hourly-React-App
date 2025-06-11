@@ -58,6 +58,7 @@ interface WorkSessionFormValues {
   factor: number;
   breakTime: number;
   wbso: boolean;
+  locked?: boolean;
   tvtMode: TvtMode;
   tvtAccruedHours: number;
   tvtUsedHours: number;
@@ -81,6 +82,7 @@ const WorkSessionModal: React.FC<Props> = ({
     factor: 1.0,
     breakTime: 0,
     wbso: false,
+    locked: false,
     tvtMode: 'none',
     tvtAccruedHours: 0,
     tvtUsedHours: 0,
@@ -103,6 +105,7 @@ const WorkSessionModal: React.FC<Props> = ({
         factor: fullSession.factor,
         breakTime: fullSession.breakTime,
         wbso: fullSession.wbso ?? false,
+        locked: fullSession.locked ?? false,
         tvtMode: fullSession.tvtAccruedHours > 0 ? 'accrue' : fullSession.tvtUsedHours > 0 ? 'use' : 'none',
         tvtAccruedHours: fullSession.tvtAccruedHours,
         tvtUsedHours: fullSession.tvtUsedHours,
@@ -113,7 +116,8 @@ const WorkSessionModal: React.FC<Props> = ({
         setSelectedGitCommits(fullSession.gitCommits);
       })
       .catch((err) => {
-        console.error('Error fetching session:', err);
+        const message = err?.message || 'Failed to fetch work session details';
+        setNotification({ message, severity: 'error' });
       });
     } else if (mode === 'create') {
       setForm({
@@ -123,6 +127,7 @@ const WorkSessionModal: React.FC<Props> = ({
       factor: 1.0,
       breakTime: 0,
       wbso: false,
+      locked: false,
       tvtMode: 'none',
       tvtAccruedHours: 0,
       tvtUsedHours: 0,
@@ -143,7 +148,8 @@ const WorkSessionModal: React.FC<Props> = ({
         const commits = await gitCommitService.filter(undefined, selectedUser, dayjs(form.startTime));
         setAvailableGitCommits(commits);
       } catch (err) {
-        console.error('Failed to fetch Git commits', err);
+        const message = 'Failed to fetch commits';
+        setNotification({ message, severity: 'error' });
       }
     };
   
@@ -179,6 +185,7 @@ const WorkSessionModal: React.FC<Props> = ({
       factor,
       breakTime,
       wbso,
+      locked,
       tvtAccruedHours,
       tvtUsedHours,
       tvtMode,
@@ -196,6 +203,7 @@ const WorkSessionModal: React.FC<Props> = ({
       tvtAccruedHours,
       tvtUsedHours,
       wbso,
+      locked: false,
       otherRemarks,
       gitCommitIds,
     };

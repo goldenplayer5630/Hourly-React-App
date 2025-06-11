@@ -60,13 +60,20 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
       <CardContent>
         <Grid container alignItems="center" sx={{ mb: 1 }}>
           {/* Task */}
-          <Grid size={12} >
+          <Grid size={11} >
             <Typography variant="subtitle2" color="text.secondary">
               {"Task:"}
             </Typography>
             <Typography variant="body1">
             {truncate(taskDescription, 300)}
             </Typography>
+          </Grid>
+          
+          {/* Locked */}
+          <Grid size={1}  >
+            <Box display="flex" justifyContent="flex-end" alignItems="center" gap={1}>
+              {locked && <Chip label="Locked" color="error" size="medium" />}
+            </Box>
           </Grid>
         </Grid>
 
@@ -87,7 +94,7 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
           {/* WBSO */}
           <Grid size={1}  >
               <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-                {wbso && <Chip label="WBSO" color="secondary" size="medium" />}
+                {wbso && <Chip label="WBSO" color="primary" size="medium" />}
               </Box>
           </Grid>
         
@@ -149,13 +156,13 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
               <RemoveRedEye onClick={() => onView(session)} sx={{ cursor: 'pointer' }} />
             </Tooltip>
 
-            <Tooltip title="Edit">
+            {!locked && <Tooltip title="Edit">
               <Edit onClick={() => onEdit(session)} sx={{ cursor: 'pointer' }} />
-            </Tooltip>
+            </Tooltip>}
 
-            <Tooltip title="Delete">
+            {!locked && <Tooltip title="Delete">
               <Delete onClick={() => onDelete(session)} sx={{ cursor: 'pointer' }} />
-            </Tooltip>
+            </Tooltip>}
             </Box>
           </Grid>
 

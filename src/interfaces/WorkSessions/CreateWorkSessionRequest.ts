@@ -6,6 +6,7 @@ export interface CreateWorkSessionRequest {
     breakTime: number;
     factor: number;
     wbso: boolean;
+    locked: boolean;
     tvtAccruedHours: number;
     tvtUsedHours: number;
     otherRemarks?: string;
