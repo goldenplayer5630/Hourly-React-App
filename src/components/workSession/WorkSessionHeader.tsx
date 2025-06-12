@@ -1,4 +1,4 @@
-import React, { use } from 'react';
+import React, { use, useState } from 'react';
 import {
     Card,
     CardContent,
@@ -12,13 +12,17 @@ import {
     FormControlLabel,
     Autocomplete,
     TextField,
-    Box
+    Box,
+    IconButton,
+    Menu
 } from '@mui/material';
 import LockOutlineIcon from '@mui/icons-material/LockOutline';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import AddIcon from '@mui/icons-material/Add';
 import { UserResponse } from '../../interfaces/Users/UserResponse';
 import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { WorkSessionResponse } from '../../interfaces/WorkSessions/WorkSessionResponse';
 
 type Props = {
     selectedUser: string;
@@ -36,6 +40,7 @@ type Props = {
     onUnlockSessions: () => void;
     users: UserResponse[];
     userContracts: UserContractResponse[];
+    sessions: WorkSessionResponse[];
     availableYears: number[];
 };
 
@@ -71,8 +76,21 @@ const WorkSessionHeader: React.FC<Props> = ({
     onUnlockSessions,
     users,
     userContracts,
+    sessions,
     availableYears
 }) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMenu = Boolean(anchorEl);
+
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    console.log(sessions);
+    const handleMenuClose = () => {
+    setAnchorEl(null);
+    };
+
     return (
         <Card variant="outlined" sx={{ pt: 1, mb: 2 }}>
             <CardContent>
@@ -105,7 +123,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                             />
                         </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 4.5, md: 1.5 }} offset={{ xs: 3, md: 0 }}>
+                    <Grid size={{ xs: 6, md: 1.5 }} offset={{ xs: 3, md: 0 }}>
                         <FormControl fullWidth size="small">
                             <InputLabel id="year-select-label">Year</InputLabel>
                             <Select
@@ -122,7 +140,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 6, md: 2 }} offset={{ xs: 3, md: 0 }}>
+                    <Grid size={{ xs: 6, md: 1.5 }} offset={{ xs: 3, md: 0 }}>
                         <FormControl fullWidth size="small">
                             <InputLabel id="month-select-label">Month</InputLabel>
                             <Select
@@ -146,31 +164,54 @@ const WorkSessionHeader: React.FC<Props> = ({
                         />
                     </Grid>
                     <Grid size={{ xs: 10, md: 3.5 }} sx={{ display: 'flex', justifyContent: 'flex-end' }} offset={{ md: 'auto' }}>
-                        <Box display="flex" justifyContent="flex-end" gap={1}>
-                        <Button
-                            variant="contained"
-                            startIcon={<LockOutlineIcon />}
-                            onClick={onLockSessions}
-                            disabled={!selectedUserContract}
+                    <IconButton
+                        aria-label="actions"
+                        aria-controls={openMenu ? 'actions-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openMenu ? 'true' : undefined}
+                        onClick={handleMenuClick}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                        id="actions-menu"
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                        <MenuItem
+                        onClick={() => {
+                            handleMenuClose();
+                            onAddWorkSession();
+                        }}
+                        disabled={!selectedUserContract || !selectedUser || !selectedYear || !selectedMonth}
                         >
-                            Lock sessions
-                        </Button>
-                        <Button
-                            variant="contained"
-                            startIcon={<LockOpenIcon/>}
-                            onClick={onUnlockSessions}
-                            disabled={!selectedUserContract}
+                        <AddIcon fontSize="small" sx={{ mr: 1 }} />
+                        Add Work Session
+                        </MenuItem>
+                        <MenuItem
+                        onClick={() => {
+                            handleMenuClose();
+                            onLockSessions();
+                        }}
+                        disabled={!selectedUserContract ||  sessions.length < 1 || !selectedYear || !selectedMonth}
                         >
-                            Unlock sessions
-                        </Button>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon />}
-                            onClick={onAddWorkSession}
+                        <LockOutlineIcon fontSize="small" sx={{ mr: 1 }} />
+                        Lock Sessions
+                        </MenuItem>
+                        <MenuItem
+                        onClick={() => {
+                            handleMenuClose();
+                            onUnlockSessions();
+                        }}
+                        disabled={!selectedUserContract || sessions.length < 1 || !selectedYear || !selectedMonth}
                         >
-                            Add Work Session
-                        </Button>
-                        </Box>
+                        <LockOpenIcon fontSize="small" sx={{ mr: 1 }} />
+                        Unlock Sessions
+                        </MenuItem>
+                    </Menu>
                     </Grid>
                 </Grid>
             </CardContent>

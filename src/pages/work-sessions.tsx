@@ -188,6 +188,7 @@ const WorkSessionsPage = () => {
         onUnlockSessions={() => handleLockSessions(false)}
         users={users}
         userContracts={userContracts}
+        sessions={sessions}
         availableYears={getAvailableYears()}
       />
       
