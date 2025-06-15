@@ -89,7 +89,7 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
             </Typography>
           </Grid>
 
-          <Grid size={3}  ></Grid>
+          <Grid size={2}  ></Grid>
 
           {/* WBSO */}
           <Grid size={1}  >

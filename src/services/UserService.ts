@@ -1,6 +1,6 @@
 import { UserResponse } from '../interfaces/Users/UserResponse';
 
-const API_BASE = 'https://localhost:7280/api/User';
+const API_BASE = 'http://localhost:5000/api/User';
 
 export const userService = {
   getAll: async (): Promise<UserResponse[]> => {
