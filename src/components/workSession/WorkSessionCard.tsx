@@ -89,7 +89,7 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
             </Typography>
           </Grid>
 
-          <Grid size={2}  ></Grid>
+          <Grid size={3}  ></Grid>
 
           {/* WBSO */}
           <Grid size={1}  >
@@ -129,15 +129,18 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
           </Grid>
 
           {/* TVT hours */}
-          {(tvtAccruedHours > 0 || tvtUsedHours > 0) &&
           <Grid size={1}>
-            <Typography variant="subtitle2" color="text.secondary">
-              {`${tvtAccruedHours > 0 ? `T4T accrued:` : tvtUsedHours > 0 ? `T4T used:` : ''}`}
-            </Typography>
-            <Typography variant="h6" color="text.black">
-              {tvtAccruedHours > 0 ? `${formatTime(tvtAccruedHours)}` : tvtUsedHours > 0 ? `${formatTime(tvtUsedHours)}` : ''}
-            </Typography>
-          </Grid>}
+            {(tvtAccruedHours > 0 || tvtUsedHours > 0) && (
+              <>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {tvtAccruedHours > 0 ? 'T4T accrued:' : 'T4T used:'}
+                </Typography>
+                <Typography variant="h6" color="text.black">
+                  {formatTime(tvtAccruedHours > 0 ? tvtAccruedHours : tvtUsedHours)}
+                </Typography>
+              </>
+            )}
+          </Grid>
 
           {/* Net effective hours */}
           <Grid size={1}>
@@ -169,9 +172,10 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
         </Grid>
 
         {/*  Other remarks */}
-        {otherRemarks && (
+        
         <Grid container alignItems="center">
-          <Grid size={8} >
+        <Grid size={8} >
+          {otherRemarks && (
           <Box>
               <Typography variant="subtitle2" color="text.secondary">
               {"Other remarks:"}
@@ -180,9 +184,9 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
               {truncate(otherRemarks, 200)}
               </Typography>
             </Box>
+          )}
           </Grid>
         </Grid>
-        )}
       </CardContent>
     </Card>
   );
