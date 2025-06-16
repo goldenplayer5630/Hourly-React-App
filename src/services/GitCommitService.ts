@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { GitCommitResponse } from '../interfaces/GitCommits/GitCommitResponse';
 
-const API_BASE = 'http://localhost:5000/api/GitCommit';
+const API_BASE = 'https://localhost:5000/api/GitCommit';
 
 export const gitCommitService = {
   getAll: async (): Promise<GitCommitResponse[]> => {

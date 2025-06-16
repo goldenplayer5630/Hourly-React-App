@@ -16,6 +16,6 @@ export interface GitCommitResponse {
   updatedAt?: string | null;
 
   author: UserResponse | null;
-  repository: GitRepositoryResponse | null;
+  gitRepository: GitRepositoryResponse | null;
   workSessions: WorkSessionResponse[];
 }

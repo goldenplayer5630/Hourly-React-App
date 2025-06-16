@@ -1,7 +1,7 @@
 import { CreateUserContract } from "../interfaces/UserContracts/CreateUserContract";
 import { UserContractResponse } from "../interfaces/UserContracts/UserContractResponse";
 
-const API_BASE = 'http://localhost:5000/api/UserContract';
+const API_BASE = 'https://localhost:5000/api/UserContract';
 
 export const userContractService = {
 

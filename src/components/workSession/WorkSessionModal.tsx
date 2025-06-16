@@ -408,9 +408,9 @@ const WorkSessionModal: React.FC<Props> = ({
                     secondary={
                       <div>
                         <span style={{ color: '#888' }}>
-                            {(option.repository?.name || 'Unknown Repository').length > 40
-                              ? (option.repository?.name || 'Unknown Repository').slice(0, 40) + '…'
-                              : (option.repository?.name || 'Unknown Repository')}
+                            {(option.gitRepository?.name || 'Unknown Repository').length > 40
+                              ? (option.gitRepository?.name || 'Unknown Repository').slice(0, 40) + '…'
+                              : (option.gitRepository?.name || 'Unknown Repository')}
                         </span>
                         <span style={{ color: '#888' }}>
                           {' - '}
@@ -460,11 +460,11 @@ const WorkSessionModal: React.FC<Props> = ({
                         </span>
                       </div>
                       <div>
-                        <a href={option.repository?.webUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={option.gitRepository?.webUrl} target="_blank" rel="noopener noreferrer">
                           <span style={{ color: '#888' }}>
-                              {(option.repository?.name || 'Unknown Repository').length > 50
-                                ? (option.repository?.name || 'Unknown Repository').slice(0, 50) + '…'
-                                : (option.repository?.name || 'Unknown Repository')}
+                              {(option.gitRepository?.name || 'Unknown Repository').length > 50
+                                ? (option.gitRepository?.name || 'Unknown Repository').slice(0, 50) + '…'
+                                : (option.gitRepository?.name || 'Unknown Repository')}
                           </span>
                         </a>
                       </div>

@@ -89,7 +89,7 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
             </Typography>
           </Grid>
 
-          <Grid size={3}  ></Grid>
+          <Grid size={2}  ></Grid>
 
           {/* WBSO */}
           <Grid size={1}  >
@@ -109,14 +109,18 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
           </Grid>
 
           {/* Break hours */}
-          {breakTime > 0 && <Grid size={1}>
+          <Grid size={1}>
+          {breakTime > 0 && (
+            <>
             <Typography variant="subtitle2" color="text.secondary">
               {"Break hours:"}
             </Typography>
             <Typography variant="h6" color="text.black">
               {formatTime(breakTime)}
             </Typography>
-          </Grid>}
+            </>
+            )}
+          </Grid>
 
           {/* Total effective hours */}
           <Grid size={1}>
