@@ -1,7 +1,7 @@
 import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
 import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
 
-const API_BASE = 'https://localhost:5000/api/WorkSession';
+const API_BASE = 'http://localhost:5000/api/WorkSession';
 
 export const workSessionService = {
   getAll: async (): Promise<WorkSessionResponse[]> => {

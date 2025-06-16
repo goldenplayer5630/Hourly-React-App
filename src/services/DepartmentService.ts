@@ -1,6 +1,6 @@
 import { DepartmentResponse } from '../interfaces/Departments/DepartmentResponse';
 
-const API_BASE = 'https://localhost:5000/api/Department';
+const API_BASE = 'http://localhost:5000/api/Department';
 
 export const departmentService = {
   getAll: async (): Promise<DepartmentResponse[]> => {
