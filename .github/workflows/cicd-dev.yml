@@ -25,7 +25,7 @@ jobs:
 
       - name: Build and tag Docker images
         run: |
-          docker build -t ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-react-app:pre-release -f ./Dockerfile .
+          docker build --build-arg REACT_APP_API_BASE_URL=http://gateway:5000 -t ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-react-app:pre-release -f ./Dockerfile .
 
       - name: Push Docker images to GHCR
         run: |

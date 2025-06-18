@@ -3,12 +3,16 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Add build arg to inject environment variables
+ARG REACT_APP_API_BASE_URL
+
 # Install dependencies
 COPY package*.json ./
 RUN npm install
 
 # Copy source code and build the app
 COPY . .
+ENV REACT_APP_API_BASE_URL=$REACT_APP_API_BASE_URL
 RUN npm run build
 
 # Stage 2: Serve the build with a lightweight web server
