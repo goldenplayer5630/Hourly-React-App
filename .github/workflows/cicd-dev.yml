@@ -25,8 +25,10 @@ jobs:
 
       - name: Build and tag Docker images
         run: |
-          docker build --build-arg REACT_APP_API_BASE_URL=http://localhost:5000 -t ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-react-app:pre-release -f ./Dockerfile .
+          docker build --build-arg REACT_APP_API_BASE_URL=https://hourly-micro.vincentbok.nl -t ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-microservice-app:pre-release -f ./Dockerfile .
+          docker build --build-arg REACT_APP_API_BASE_URL=https://hourly-mono.vincentbok.nl -t ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-monolith-app:pre-release -f ./Dockerfile .
 
       - name: Push Docker images to GHCR
         run: |
-          docker push ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-react-app:pre-release
+          docker push ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-microservice-app:pre-release
+          docker push ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-monolith-app:pre-release
