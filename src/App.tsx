@@ -10,6 +10,10 @@ import SettingsPage from './pages/settings';
 import UserContractsPage from './pages/user-contracts';
 
 const App: React.FC = () => {
+  if (!window.env?.REACT_APP_API_BASE_URL) {
+    console.warn("REACT_APP_API_BASE_URL is not defined. Check env.js!");
+  }
+  
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <nav className="mb-6 flex gap-4">
