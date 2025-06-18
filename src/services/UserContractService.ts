@@ -1,7 +1,10 @@
 import { CreateUserContract } from "../interfaces/UserContracts/CreateUserContract";
 import { UserContractResponse } from "../interfaces/UserContracts/UserContractResponse";
 
-const API_BASE = 'http://localhost:5000/api/UserContract';
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
+if (!API_BASE) {
+  throw new Error('REACT_APP_API_BASE_URL is not defined');
+}
 
 export const userContractService = {
 

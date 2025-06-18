@@ -1,6 +1,9 @@
 import { DepartmentResponse } from '../interfaces/Departments/DepartmentResponse';
 
-const API_BASE = 'http://localhost:5000/api/Department';
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
+if (!API_BASE) {
+  throw new Error('REACT_APP_API_BASE_URL is not defined');
+}
 
 export const departmentService = {
   getAll: async (): Promise<DepartmentResponse[]> => {

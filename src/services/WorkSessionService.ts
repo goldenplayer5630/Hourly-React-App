@@ -1,7 +1,10 @@
 import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
 import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
 
-const API_BASE = 'http://localhost:5000/api/WorkSession';
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
+if (!API_BASE) {
+  throw new Error('REACT_APP_API_BASE_URL is not defined');
+}
 
 export const workSessionService = {
   getAll: async (): Promise<WorkSessionResponse[]> => {

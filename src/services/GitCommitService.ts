@@ -1,7 +1,10 @@
 import dayjs from 'dayjs';
 import { GitCommitResponse } from '../interfaces/GitCommits/GitCommitResponse';
 
-const API_BASE = 'http://localhost:5000/api/GitCommit';
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
+if (!API_BASE) {
+  throw new Error('REACT_APP_API_BASE_URL is not defined');
+}
 
 export const gitCommitService = {
   getAll: async (): Promise<GitCommitResponse[]> => {

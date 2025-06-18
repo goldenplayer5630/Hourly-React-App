@@ -1,0 +1,32 @@
+name: Build and Push React App
+
+on:
+  push:
+    branches: [ dev ] 
+
+env:
+  IMAGE_REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ secrets.GH_USERNAME }} --password-stdin
+
+      - name: Build and tag Docker images
+        run: |
+          docker build -t ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-react-app:pre-release -f ./Dockerfile .
+
+      - name: Push Docker images to GHCR
+        run: |
+          docker push ghcr.io/${{ env.IMAGE_NAMESPACE }}/hourly-react-app:pre-release

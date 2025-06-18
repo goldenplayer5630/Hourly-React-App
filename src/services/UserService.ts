@@ -1,6 +1,9 @@
 import { UserResponse } from '../interfaces/Users/UserResponse';
 
-const API_BASE = 'http://localhost:5000/api/User';
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
+if (!API_BASE) {
+  throw new Error('REACT_APP_API_BASE_URL is not defined');
+}
 
 export const userService = {
   getAll: async (): Promise<UserResponse[]> => {
