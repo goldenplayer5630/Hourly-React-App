@@ -10,7 +10,6 @@ import { gitCommitService } from '../services/GitCommitService';
 import WorkSessionModal from '../components/WorkSession/WorkSessionModal';
 import { userContractService } from '../services/UserContractService';
 import { UserContractResponse } from '../interfaces/UserContracts/UserContractResponse';
-import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
 import Notification, { NotificationState } from '../components/Common/Notification';
 
 const WorkSessionsPage = () => {
