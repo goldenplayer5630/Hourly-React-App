@@ -1,7 +1,7 @@
 import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
 import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL;
+const API_BASE = process.env.REACT_APP_API_BASE_URL + "/api/worksession";
 if (!API_BASE) {
   throw new Error('REACT_APP_API_BASE_URL is not defined');
 }

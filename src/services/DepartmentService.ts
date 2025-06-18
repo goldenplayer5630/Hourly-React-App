@@ -1,6 +1,6 @@
 import { DepartmentResponse } from '../interfaces/Departments/DepartmentResponse';
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL;
+const API_BASE = process.env.REACT_APP_API_BASE_URL  + "/api/department";
 if (!API_BASE) {
   throw new Error('REACT_APP_API_BASE_URL is not defined');
 }
