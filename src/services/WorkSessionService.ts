@@ -1,15 +1,17 @@
 import { CreateWorkSessionRequest } from '../interfaces/WorkSessions/CreateWorkSessionRequest';
 import { WorkSessionResponse } from '../interfaces/WorkSessions/WorkSessionResponse';
+import { API_BASE } from '../config';
 
-const API_BASE = process.env.REACT_APP_API_BASE_URL + "/api/worksession";
-console.log(API_BASE);
 if (!API_BASE) {
   throw new Error('REACT_APP_API_BASE_URL is not defined');
 }
 
+const endpoint = `${API_BASE}/api/worksession`;
+console.log(endpoint);
+
 export const workSessionService = {
   getAll: async (): Promise<WorkSessionResponse[]> => {
-    const res = await fetch(API_BASE);
+    const res = await fetch(endpoint);
     if (!res.ok) throw new Error('Failed to fetch work sessions');
     return res.json();
   },
@@ -27,19 +29,19 @@ export const workSessionService = {
     if (month !== undefined) params.append('month', month.toString());
     if (wbso == true) params.append('wbso', wbso.toString());
   
-    const res = await fetch(`${API_BASE}/Filter?${params.toString()}`);
+    const res = await fetch(`${endpoint}/Filter?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to filter work sessions');
     return res.json();
   },  
 
   getById: async (id: string): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${id}`);
+    const res = await fetch(`${endpoint}/${id}`);
     if (!res.ok) throw new Error(`Work session ${id} not found`);
     return res.json();
   },
 
   create: async (payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
-    const res = await fetch(API_BASE, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -72,7 +74,7 @@ export const workSessionService = {
   },
   
   update: async (id: string, payload: Partial<CreateWorkSessionRequest>): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${id}`, {
+    const res = await fetch(`${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -104,7 +106,7 @@ export const workSessionService = {
   },
 
   updateLock: async (id: string, locked: boolean): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${id}?locked=${locked}`, {
+    const res = await fetch(`${endpoint}/${id}?locked=${locked}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: null,
@@ -136,14 +138,14 @@ export const workSessionService = {
   },
 
   delete: async (id: string): Promise<void> => {
-    const res = await fetch(`${API_BASE}/${id}`, {
+    const res = await fetch(`${endpoint}/${id}`, {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error(`Failed to delete work session ${id}`);
   },
 
   addGitCommit: async (workSessionId: string, gitCommitId: string): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${workSessionId}/AddGitCommit/${gitCommitId}`, {
+    const res = await fetch(`${endpoint}/${workSessionId}/AddGitCommit/${gitCommitId}`, {
       method: 'POST',
     });
     if (!res.ok) throw new Error('Failed to add Git commit');
@@ -151,7 +153,7 @@ export const workSessionService = {
   },
 
   removeGitCommit: async (workSessionId: string, gitCommitId: string): Promise<WorkSessionResponse> => {
-    const res = await fetch(`${API_BASE}/${workSessionId}/RemoveGitCommit/${gitCommitId}`, {
+    const res = await fetch(`${endpoint}/${workSessionId}/RemoveGitCommit/${gitCommitId}`, {
       method: 'POST',
     });
     if (!res.ok) throw new Error('Failed to remove Git commit');
