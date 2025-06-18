@@ -9,7 +9,6 @@ RUN npm install
 
 # Copy source code and build the app
 COPY . .
-COPY public/env.js /usr/share/nginx/html/env.js
 RUN npm run build
 
 # Stage 2: Serve the build with a lightweight web server
