@@ -35,6 +35,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/nl';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { gitCommitService } from '../../services/GitCommitService';
+import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 
 dayjs.locale('nl');
 
@@ -45,7 +46,7 @@ type Props = {
   open: boolean;
   mode: WorkSessionModalMode;
   selectedSession?: WorkSessionResponse;
-  selectedUserContract: string;
+  selectedUserContract: UserContractResponse;
   selectedUser: string;
   onClose: () => void;
   onSubmit: () => void;
@@ -194,7 +195,7 @@ const WorkSessionModal: React.FC<Props> = ({
     } = form;
 
     const request: CreateWorkSessionRequest = {
-      userContractId: selectedUserContract,
+      userContractId: selectedUserContract.id,
       taskDescription,
       startTime,
       endTime,

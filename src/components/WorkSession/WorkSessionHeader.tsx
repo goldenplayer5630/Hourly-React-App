@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import {
     Card,
     CardContent,
@@ -23,14 +23,15 @@ import { UserResponse } from '../../interfaces/Users/UserResponse';
 import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { WorkSessionResponse } from '../../interfaces/WorkSessions/WorkSessionResponse';
+import { userContractService } from '../../services/UserContractService';
 
 type Props = {
     selectedUser: string;
     selectedYear: number;
     selectedMonth: string;
-    selectedUserContract: string;
+    selectedUserContract: UserContractResponse ;
     onUserChange: (userId: string) => void;
-    onUserContractChange: (userContractId: string) => void;
+    onUserContractChange: (userContractId: UserContractResponse) => void;
     onYearChange: (year: number) => void;
     onMonthChange: (value: string) => void;
     wbsoOnly: boolean;
@@ -86,7 +87,6 @@ const WorkSessionHeader: React.FC<Props> = ({
         setAnchorEl(event.currentTarget);
     };
 
-    console.log(sessions);
     const handleMenuClose = () => {
     setAnchorEl(null);
     };
@@ -115,9 +115,9 @@ const WorkSessionHeader: React.FC<Props> = ({
                                 size="small"
                                 options={userContracts}
                                 getOptionLabel={(option) => option.name}
-                                value={userContracts.find((userContract) => userContract.id === selectedUserContract) || null}
+                                value={userContracts.find((userContract) => userContract.id === selectedUserContract.id) || null}
                                 onChange={(_, newValue) => {
-                                    if (newValue) onUserContractChange(newValue.id);
+                                    if (newValue) onUserContractChange(newValue);
                                 }}
                                 renderInput={(params) => <TextField {...params} label="Contract" variant="outlined" fullWidth />}
                             />
@@ -180,13 +180,13 @@ const WorkSessionHeader: React.FC<Props> = ({
                         onClose={handleMenuClose}
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
+                        >
                         <MenuItem
                         onClick={() => {
                             handleMenuClose();
                             onAddWorkSession();
                         }}
-                        disabled={!selectedUserContract || !selectedUser || !selectedYear || !selectedMonth}
+                        disabled={!selectedUserContract.isActive || !selectedUser || !selectedYear || !selectedMonth}
                         >
                         <AddIcon fontSize="small" sx={{ mr: 1 }} />
                         Add Work Session
@@ -196,7 +196,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                             handleMenuClose();
                             onLockSessions();
                         }}
-                        disabled={!selectedUserContract ||  sessions.length < 1 || !selectedYear || !selectedMonth}
+                        disabled={!selectedUserContract.isActive ||  sessions.length < 1 || !selectedYear || !selectedMonth}
                         >
                         <LockOutlineIcon fontSize="small" sx={{ mr: 1 }} />
                         Lock Sessions
@@ -206,7 +206,7 @@ const WorkSessionHeader: React.FC<Props> = ({
                             handleMenuClose();
                             onUnlockSessions();
                         }}
-                        disabled={!selectedUserContract || sessions.length < 1 || !selectedYear || !selectedMonth}
+                        disabled={!selectedUserContract.isActive || sessions.length < 1 || !selectedYear || !selectedMonth}
                         >
                         <LockOpenIcon fontSize="small" sx={{ mr: 1 }} />
                         Unlock Sessions

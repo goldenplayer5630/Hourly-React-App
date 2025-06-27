@@ -11,6 +11,7 @@ export interface UserContractResponse {
     minWeeklyHours: number;
     maxWeeklyHours: number;
     grossHourlyRate?: number;
+    tvtHourBalance?: number;
     holidayHoursPercentage?: number;
     monthlyPaidHolidayHours: boolean;
     minimumHoursPerMonth: number;

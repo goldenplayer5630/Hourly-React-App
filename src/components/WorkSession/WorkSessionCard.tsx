@@ -14,10 +14,12 @@ import {
   Delete,
   RemoveRedEye, 
 } from '@mui/icons-material';
+import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 
 type Props = {
   key: string;
   session: WorkSessionResponse;
+  userContract: UserContractResponse;
   onView: (session: WorkSessionResponse) => void;
   onEdit: (session: WorkSessionResponse) => void;
   onDelete: (session: WorkSessionResponse) => void;
@@ -53,6 +55,7 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
     tvtAccruedHours,
     tvtUsedHours,
     locked,
+    userContract,
   } = session;
 
   return (
@@ -163,11 +166,11 @@ const WorkSessionCard: React.FC<Props> = ({ session, onView, onEdit, onDelete })
               <RemoveRedEye onClick={() => onView(session)} sx={{ cursor: 'pointer' }} />
             </Tooltip>
 
-            {!locked && <Tooltip title="Edit">
+            {!locked && userContract?.isActive && <Tooltip title="Edit">
               <Edit onClick={() => onEdit(session)} sx={{ cursor: 'pointer' }} />
             </Tooltip>}
 
-            {!locked && <Tooltip title="Delete">
+            {!locked && userContract?.isActive &&  <Tooltip title="Delete">
               <Delete onClick={() => onDelete(session)} sx={{ cursor: 'pointer' }} />
             </Tooltip>}
             </Box>

@@ -12,6 +12,7 @@ export interface CreateUserContract {
     maxWeeklyHours: number;
     
     grossHourlyRate?: number;
+    
     holidayHoursPercentage?: number;
     monthlyPaidHolidayHours: boolean;
     

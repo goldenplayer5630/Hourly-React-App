@@ -44,6 +44,7 @@ const UserContractCard: React.FC<Props> = ({ userContract, onView, onEdit, onDel
     endDate,
     isActive,
     contractType,
+    tvtHourBalance,
     minWeeklyHours,
     maxWeeklyHours,
     contractFilePath,
@@ -79,14 +80,20 @@ const UserContractCard: React.FC<Props> = ({ userContract, onView, onEdit, onDel
             </Typography>
           </Grid>
 
-          <Grid size={3}  />
+          <Grid size={2}  />
 
-          {/* Active */}
-          <Grid size={1}  >
-            <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-              {isActive && <Chip label="Active" color="success" size="medium" />}
-              {!isActive && <Chip label="Inactive" color="error" size="medium" />}
-            </Box>
+          {/* TVT balance hours */}
+          <Grid size={1} >
+            {isActive && (
+              <>
+                <Typography variant="subtitle2" color="text.secondary">
+                  {"TVT Hour Balance:"}
+                </Typography>
+                <Typography variant="h6" color="text.black">
+                  {formatTime(tvtHourBalance || 0)}
+                </Typography>
+              </>
+            )}
           </Grid>
 
           {/* Min weekly hours */}
@@ -107,6 +114,14 @@ const UserContractCard: React.FC<Props> = ({ userContract, onView, onEdit, onDel
             <Typography variant="h6" color="text.black">
               {formatTime(maxWeeklyHours)}
             </Typography>
+          </Grid>
+
+          {/* Active */}
+          <Grid size={1}  >
+            <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
+              {isActive && <Chip label="Active" color="success" size="medium" />}
+              {!isActive && <Chip label="Inactive" color="error" size="medium" />}
+            </Box>
           </Grid>
 
           {/* Action */}

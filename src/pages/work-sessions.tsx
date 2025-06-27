@@ -17,7 +17,7 @@ const WorkSessionsPage = () => {
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [userContracts, setUserContracts] = useState<UserContractResponse[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
-  const [selectedUserContract,  setSelectedUserContract] = useState<string>('');
+  const [selectedUserContract,  setSelectedUserContract] = useState<UserContractResponse | undefined>(undefined);
   const [selectedMonth, setSelectedMonth] = useState<string>(
     String(new Date().getMonth() + 1).padStart(2, '0')
   );
@@ -125,7 +125,7 @@ const WorkSessionsPage = () => {
     if (!selectedUserContract) return;
 
     workSessionService
-      .filter(selectedUserContract, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
+      .filter(selectedUserContract.id, selectedYear, parseInt(selectedMonth, 10), wbsoOnly)
       .then(setSessions)
       .catch((err) => {
         setNotification({
@@ -175,7 +175,7 @@ const WorkSessionsPage = () => {
         selectedUser={selectedUser}
         selectedYear={selectedYear}
         selectedMonth={selectedMonth}
-        selectedUserContract={selectedUserContract}
+        selectedUserContract={selectedUserContract || {} as UserContractResponse}
         onUserChange={setSelectedUser}
         onUserContractChange={setSelectedUserContract}
         onYearChange={setSelectedYear}
@@ -191,26 +191,31 @@ const WorkSessionsPage = () => {
         availableYears={getAvailableYears()}
       />
       
-      <WorkSessionList
-        sessions={sessions}
-        onView={selectedSession => handleViewWorkSession(selectedSession)}
-        onEdit={selectedSession => handleEditWorkSession(selectedSession)}
-        onDelete={selectedSession => handleDeleteWorkSession(selectedSession)}
-      />
+      {selectedUserContract && (
+        <WorkSessionList
+          sessions={sessions}
+          selectedUserContract={selectedUserContract}
+          onView={selectedSession => handleViewWorkSession(selectedSession)}
+          onEdit={selectedSession => handleEditWorkSession(selectedSession)}
+          onDelete={selectedSession => handleDeleteWorkSession(selectedSession)}
+        />
+      )}
 
 
-      <WorkSessionModal
-        open={openModal}
-        mode={modalMode}
-        selectedSession={selectedSession}
-        onClose={() => setOpenModal(false)}
-        onSubmit={() => {
-          setOpenModal(false);
-          refreshSessions();
-        }}
-        selectedUser={selectedUser}
-        selectedUserContract={selectedUserContract}
-      />
+      {selectedUserContract && (
+        <WorkSessionModal
+          open={openModal}
+          mode={modalMode}
+          selectedSession={selectedSession}
+          onClose={() => setOpenModal(false)}
+          onSubmit={() => {
+            setOpenModal(false);
+            refreshSessions();
+          }}
+          selectedUser={selectedUser}
+          selectedUserContract={selectedUserContract}
+        />
+      )}
 
     <Notification notification={notification} onClose={() => setNotification(null)} />
     </div>
