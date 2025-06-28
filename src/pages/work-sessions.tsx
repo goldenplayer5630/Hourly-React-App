@@ -48,49 +48,40 @@ const WorkSessionsPage = () => {
       if (!window.confirm('Are you sure you want to unlock all sessions for this month?')) return;
     }
   
-    const targetMonth = parseInt(selectedMonth, 10) - 1;
-  
-    const sessionsToLock = sessions.filter((session) => {
-      const start = new Date(session.startTime);
+    const targetMonth = parseInt(selectedMonth, 10);
 
-      if (lock) {
-        return (
-          start.getFullYear() === selectedYear &&
-          start.getMonth() === targetMonth &&
-          !session.locked
-        );
-      } else {
-        return (
-          start.getFullYear() === selectedYear &&
-          start.getMonth() === targetMonth &&
-          session.locked
-        );
-      }
-    });
-  
-    if (sessionsToLock.length === 0) {
-      setNotification({
-        message: 'No sessions to lock/unlock for the selected month.',
-        severity: 'error',
-      });
-      return;
-    }
-  
-    sessionsToLock.forEach((session) => {
-      workSessionService
-        .updateLock(session.id, lock)
+    if (lock) {
+      userContractService.lockMonth(selectedUserContract?.id || '', selectedYear, targetMonth)
         .then(() => {
-          setSessions((prev) =>
-            prev.map((s) => (s.id === session.id ? { ...s, locked: lock } : s))
-          );
+          setNotification({
+            message: 'Sessions locked successfully',
+            severity: 'success',
+          });
+          refreshSessions();
         })
         .catch((err) => {
           setNotification({
-            message: `Error locking session ${session.id}: ${err.message}`,
+            message: `Error locking sessions: ${err.message}`,
             severity: 'error',
           });
         });
-      });
+    } else {
+      userContractService.unlockMonth(selectedUserContract?.id || '', selectedYear, targetMonth)
+        .then(() => {
+          setNotification({
+            message: 'Sessions unlocked successfully',
+            severity: 'success',
+          });
+          refreshSessions();
+        })
+        .catch((err) => {
+          setNotification({
+            message: `Error unlocking sessions: ${err.message}`,
+            severity: 'error',
+          });
+        });
+    }
+
   };
   
   

@@ -1,38 +1,42 @@
 // src/theme.ts
-import { createTheme } from '@mui/material/styles';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
 
-const theme = createTheme({
-  palette: {
-    mode: 'light', // or 'dark'
+export const getTheme = (mode: 'light' | 'dark') => {
+  const basePalette: ThemeOptions['palette'] = {
+    mode,
     primary: {
-      main: '#0E1C36', // your brand blue
+      main: mode === 'dark' ? '#AFCBFF' : '#0E1C36', // your brand blue
     },
     secondary: {
-      main: '#AFCBFF', // optional secondary
+      main: mode === 'dark' ? '#0E1C36' : '#0E1C36', // light blue in dark mode, fallback in light
     },
     background: {
-      default: '#f9f9f9',
+      default: mode === 'dark' ? '#121212' : '#f9f9f9',
+      paper: mode === 'dark' ? '#1e1e1e' : '#ffffff',
     },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    fontSize: 14,
-    h1: {
-      fontSize: '2rem',
+  };
+  
+
+  return createTheme({
+    palette: basePalette,
+    typography: {
+      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontSize: 14,
+      h1: {
+        fontSize: '2rem',
+      },
+      button: {
+        textTransform: 'none',
+      },
     },
-    button: {
-      textTransform: 'none', // no uppercase on buttons
-    },
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+          },
         },
       },
     },
-  },
-});
-
-export default theme;
+  });
+};

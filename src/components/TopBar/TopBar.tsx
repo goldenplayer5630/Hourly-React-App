@@ -7,6 +7,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+import ThemeToggleButton from './ThemeToggleButton';
 
 const TopBar: React.FC = () => {
     return (
@@ -19,7 +20,10 @@ const TopBar: React.FC = () => {
               <Typography variant="h6" noWrap>
                 Hourly
               </Typography>
-              <ProfileMenu />
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 'auto' }}>
+                <ThemeToggleButton />
+                <ProfileMenu />
+              </Box>
             </Toolbar>
           </AppBar>
         </Box>

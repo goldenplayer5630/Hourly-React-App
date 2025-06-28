@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Avatar, IconButton, Menu, MenuItem, Box } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import ThemeToggleButton from '../TopBar/ThemeToggleButton';
 
 const ProfileMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
