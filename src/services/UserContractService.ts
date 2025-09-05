@@ -39,6 +39,18 @@ export const userContractService = {
     return res.json();
   },
 
+  getMonthlySummary: async (userContractId: string, year: number, month: number): Promise<any> => {
+    const res = await fetch(`${endpoint}/${userContractId}/MonthlySummary?year=${year}&month=${month}`);
+    if (!res.ok) throw new Error(`Failed to fetch monthly summary for contract ${userContractId}`);
+    return res.json();
+  },
+
+  getYearlySummary: async (userContractId: string, year: number): Promise<any> => {
+    const res = await fetch(`${endpoint}/${userContractId}/YearlySummary?year=${year}`);
+    if (!res.ok) throw new Error(`Failed to fetch yearly summary for contract ${userContractId}`);
+    return res.json();
+  },
+
   create: async (payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
     const res = await fetch(endpoint, {
       method: 'POST',

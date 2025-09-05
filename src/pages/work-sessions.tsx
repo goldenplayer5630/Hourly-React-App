@@ -11,9 +11,12 @@ import WorkSessionModal from '../components/WorkSession/WorkSessionModal';
 import { userContractService } from '../services/UserContractService';
 import { UserContractResponse } from '../interfaces/UserContracts/UserContractResponse';
 import Notification, { NotificationState } from '../components/Common/Notification';
+import WorkSessionSummary from '../components/WorkSession/WorkSessionSummary';
+import { MonthlySummary } from '../interfaces/Summaries/MonthlySummary';
 
 const WorkSessionsPage = () => {
   const [sessions, setSessions] = useState<WorkSessionResponse[]>([]);
+  const [monthlySummary, setMonthlySummary] = useState<MonthlySummary | undefined>(undefined);
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [userContracts, setUserContracts] = useState<UserContractResponse[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>('');
@@ -124,6 +127,16 @@ const WorkSessionsPage = () => {
           severity: 'error',
         });
       });
+
+      userContractService
+      .getMonthlySummary(selectedUserContract.id, selectedYear, parseInt(selectedMonth, 10))
+      .then(setMonthlySummary)
+      .catch((err) => {
+        setNotification({
+          message: 'Error fetching monthly summary',
+          severity: 'error',
+        });
+      });
   };
 
   useEffect(() => {
@@ -181,6 +194,11 @@ const WorkSessionsPage = () => {
         sessions={sessions}
         availableYears={getAvailableYears()}
       />
+
+      {selectedUserContract && monthlySummary && (
+        <WorkSessionSummary monthlySummary={monthlySummary} />
+      )}
+
       
       {selectedUserContract && (
         <WorkSessionList
