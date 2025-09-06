@@ -1,4 +1,4 @@
-// components/WorkSession/WorkSessionSummary.tsx
+// components/Dashboard/DashboardYearlySummary.tsx
 import * as React from 'react';
 import {
   Card,
@@ -12,11 +12,12 @@ import {
   Box,
 } from '@mui/material';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
-import { MonthlySummary } from '../../interfaces/Summaries/MonthlySummary';
+
+// Adjust this import to your actual interface path
+import { YearlySummary } from '../../interfaces/Summaries/YearlySummary';
 
 type Props = {
-  // Make it optional so the parent can render safely during first load
-  monthlySummary?: MonthlySummary;
+  yearlySummary?: YearlySummary;
 };
 
 const formatTime = (hoursFloat: number) => {
@@ -48,26 +49,33 @@ const Stat: React.FC<{ label: string; value: string | number; hint?: string }> =
   </Paper>
 );
 
-const WorkSessionSummary: React.FC<Props> = ({ monthlySummary }) => {
-  if (!monthlySummary) {
+const DashboardYearlySummary: React.FC<Props> = ({ yearlySummary }) => {
+  if (!yearlySummary) {
     return (
       <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
-        <CardHeader title="Monthly Summary" />
+        <CardHeader title="Yearly Summary" />
         <Divider />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            Select a user contract and period to see the summary.
+            Select a user contract and year to see the summary.
           </Typography>
         </CardContent>
       </Card>
     );
   }
 
-  const { month, year, totalRawEffectiveHours, totalNetEffectiveHours, totalTVTHoursAccrued, totalTVTHoursUsed } =
-    monthlySummary;
+  const {
+    year,
+    totalRawEffectiveHours,
+    totalNetEffectiveHours,
+    totalTVTHoursAccrued,
+    totalTVTHoursUsed,
+  } = yearlySummary;
 
   return (
     <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
+      <CardHeader title="Yearly Summary" subheader={`Year ${year}`} />
+      <Divider />
       <CardContent>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
@@ -75,15 +83,15 @@ const WorkSessionSummary: React.FC<Props> = ({ monthlySummary }) => {
           useFlexGap
           flexWrap="wrap"
         >
-        <Stat
+          <Stat
             label="TVT Hours Accrued"
             value={formatTime(totalTVTHoursAccrued)}
-            hint="Time-for-time earned this month."
+            hint="Time-for-time earned this year."
           />
           <Stat
             label="TVT Hours Used"
             value={formatTime(totalTVTHoursUsed)}
-            hint="Time-for-time consumed this month."
+            hint="Time-for-time consumed this year."
           />
           <Stat
             label="Total Worked Hours"
@@ -101,4 +109,4 @@ const WorkSessionSummary: React.FC<Props> = ({ monthlySummary }) => {
   );
 };
 
-export default WorkSessionSummary;
+export default DashboardYearlySummary;
