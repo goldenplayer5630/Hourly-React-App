@@ -11,6 +11,7 @@ import { YearlySummary } from '../interfaces/Summaries/YearlySummary';
 import DashboardMonthlyOverview from '../components/Dashboard/DashboardMonthlyOverview';
 import { MonthlySummary } from '../interfaces/Summaries/MonthlySummary';
 import DashboardYearlyHoursLineChart from '../components/Dashboard/DashboardYearlyHoursLineChart';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardPage = () => {
   const [users, setUsers] = useState<UserResponse[]>([]);
@@ -28,6 +29,8 @@ const DashboardPage = () => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 7 }, (_, i) => currentYear - i);
   };
+
+  const navigate = useNavigate();
 
   const refreshYearData = async () => {
     if (!selectedUserContract) return;
@@ -136,7 +139,9 @@ const DashboardPage = () => {
       />
 
       {selectedUserContract && yearlySummary && (
-        <DashboardYearlySummary yearlySummary={yearlySummary} />
+        <DashboardYearlySummary 
+        yearlySummary={yearlySummary}
+        userContract={selectedUserContract} />
       )}
 
       {selectedUserContract && (
@@ -145,8 +150,14 @@ const DashboardPage = () => {
           data={monthlyOverview}
           loading={loading}
           onMonthClick={(m) => {
-            // e.g. navigate(`/work-sessions?user=${selectedUser}&contract=${selectedUserContract?.id}&year=${selectedYear}&month=${String(m).padStart(2, '0')}`)
+            navigate(
+              `/work-sessions?user=${selectedUser}` +
+              `&contract=${selectedUserContract.id}` +
+              `&year=${selectedYear}` +
+              `&month=${String(m).padStart(2, '0')}`
+            );
           }}
+          selectedUserContract={selectedUserContract}
         />
       )}
 
@@ -156,10 +167,7 @@ const DashboardPage = () => {
           data={monthlyOverview} // MonthlyOverviewItem[]
           loading={loading}
           title="Hours worked vs. Net hours (per month)"
-          onMonthClick={(m) => {
-            // e.g. navigate to work sessions for that month
-            // navigate(`/work-sessions?...&month=${String(m).padStart(2, '0')}`)
-          }}
+          selectedUserContract={selectedUserContract}
         />
       )}
 

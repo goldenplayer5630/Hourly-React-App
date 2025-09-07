@@ -12,16 +12,17 @@ import {
   Box,
 } from '@mui/material';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
-
-// Adjust this import to your actual interface path
 import { YearlySummary } from '../../interfaces/Summaries/YearlySummary';
+// If you have this type, import it; otherwise keep as any
+import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 
 type Props = {
   yearlySummary?: YearlySummary;
+  userContract?: UserContractResponse | null; // NEW
 };
 
 const formatTime = (hoursFloat: number) => {
-  const totalMinutes = Math.round(hoursFloat * 60);
+  const totalMinutes = Math.round((hoursFloat ?? 0) * 60);
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   return `${h}h ${m}m`;
@@ -49,7 +50,7 @@ const Stat: React.FC<{ label: string; value: string | number; hint?: string }> =
   </Paper>
 );
 
-const DashboardYearlySummary: React.FC<Props> = ({ yearlySummary }) => {
+const DashboardYearlySummary: React.FC<Props> = ({ yearlySummary, userContract }) => {
   if (!yearlySummary) {
     return (
       <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
@@ -68,9 +69,13 @@ const DashboardYearlySummary: React.FC<Props> = ({ yearlySummary }) => {
     year,
     totalRawEffectiveHours,
     totalNetEffectiveHours,
-    totalTVTHoursAccrued,
-    totalTVTHoursUsed,
   } = yearlySummary;
+
+  // Try both camelCase and PascalCase for safety
+  const tvtBalanceRaw =
+    (userContract as any)?.tvtHourBalance ??
+    (userContract as any)?.TVTHourBalance ??
+    null;
 
   return (
     <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
@@ -83,16 +88,13 @@ const DashboardYearlySummary: React.FC<Props> = ({ yearlySummary }) => {
           useFlexGap
           flexWrap="wrap"
         >
+          {/* NEW: Current TVT Balance (from contract) */}
           <Stat
-            label="TVT Hours Accrued"
-            value={formatTime(totalTVTHoursAccrued)}
-            hint="Time-for-time earned this year."
+            label="Current TVT Balance"
+            value={tvtBalanceRaw !== null ? formatTime(tvtBalanceRaw) : '—'}
+            hint="Running time-for-time balance on the contract."
           />
-          <Stat
-            label="TVT Hours Used"
-            value={formatTime(totalTVTHoursUsed)}
-            hint="Time-for-time consumed this year."
-          />
+
           <Stat
             label="Total Worked Hours"
             value={formatTime(totalRawEffectiveHours)}

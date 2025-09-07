@@ -1,28 +1,29 @@
 // src/components/layout/ProfileMenu.tsx
-import React, { useState } from 'react';
-import { Avatar, IconButton, Menu, MenuItem, Box } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
-import ThemeToggleButton from '../TopBar/ThemeToggleButton';
+import React, { useState } from "react";
+import { Avatar, IconButton, Menu, MenuItem, Box, CircularProgress } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useMsal } from "@azure/msal-react";
+import { useMe } from "../../hooks/useMe";
 
 const ProfileMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const navigate = useNavigate();
+  const { instance } = useMsal();
+  const { me, loading } = useMe();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+  const handleMenuClose = () => setAnchorEl(null);
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    // TODO: Replace with actual logout logic
-    console.log('User logged out');
-    navigate('/'); // Redirect to home/login
+  const handleLogout = async () => {
+    handleMenuClose();
+    await instance.logoutRedirect({ postLogoutRedirectUri: window.location.origin });
   };
 
   const open = Boolean(anchorEl);
+
+  // Fallback initial for avatar
+  const initial = me?.name?.[0]?.toUpperCase() ?? me?.email?.[0]?.toUpperCase();
 
   return (
     <Box>
@@ -31,12 +32,13 @@ const ProfileMenu: React.FC = () => {
         size="large"
         edge="end"
         color="inherit"
-        aria-controls={open ? 'account-menu' : undefined}
+        aria-controls={open ? "account-menu" : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+        aria-expanded={open ? "true" : undefined}
       >
-        <Avatar alt="User Avatar" />
+        <Avatar alt={me?.name ?? "User"}>{initial}</Avatar>
       </IconButton>
+
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -47,27 +49,37 @@ const ProfileMenu: React.FC = () => {
           elevation: 0,
           sx: {
             mt: 1.5,
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.15))',
-            '&:before': {
+            overflow: "visible",
+            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.15))",
+            "&:before": {
               content: '""',
-              display: 'block',
-              position: 'absolute',
+              display: "block",
+              position: "absolute",
               top: 0,
               right: 14,
               width: 10,
               height: 10,
-              bgcolor: 'background.paper',
-              transform: 'translateY(-50%) rotate(45deg)',
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
               zIndex: 0,
             },
           },
         }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem component={Link} to="/profile">Profile</MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        {loading && (
+          <MenuItem disabled>
+            <CircularProgress size={18} sx={{ mr: 1 }} /> Loading…
+          </MenuItem>
+        )}
+        {!loading && me && (
+          <>
+            <MenuItem disabled>{me.name ?? me.email ?? "Unknown user"}</MenuItem>
+            <MenuItem component={Link} to="/profile">Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </>
+        )}
       </Menu>
     </Box>
   );

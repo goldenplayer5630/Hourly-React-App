@@ -1,5 +1,6 @@
 import { DepartmentResponse } from '../interfaces/Departments/DepartmentResponse';
 import { API_BASE } from '../config';
+import { authorizedFetch } from '../auth/authorizedFetch';
 
 if (!API_BASE) {
   throw new Error('REACT_APP_API_BASE_URL is not defined');
@@ -9,7 +10,7 @@ const endpoint = `${API_BASE}/api/department`;
 
 export const departmentService = {
   getAll: async (): Promise<DepartmentResponse[]> => {
-    const res = await fetch(endpoint);
+    const res = await authorizedFetch(endpoint);
     if (!res.ok) throw new Error('Failed to fetch Departments');
     return res.json();
   },
@@ -27,20 +28,20 @@ export const departmentService = {
     if (month !== undefined) params.append('month', month.toString());
     if (wbso !== undefined) params.append('wbso', wbso.toString());
   
-    const res = await fetch(`${endpoint}/Filter?${params.toString()}`);
+    const res = await authorizedFetch(`${endpoint}/Filter?${params.toString()}`);
     console.log(`${endpoint}/Filter?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to filter Departments');
     return res.json();
   },  
 
   getById: async (id: string): Promise<DepartmentResponse> => {
-    const res = await fetch(`${endpoint}/${id}`);
+    const res = await authorizedFetch(`${endpoint}/${id}`);
     if (!res.ok) throw new Error(`Department ${id} not found`);
     return res.json();
   },
 
   create: async (payload: Partial<DepartmentResponse>): Promise<DepartmentResponse> => {
-    const res = await fetch(endpoint, {
+    const res = await authorizedFetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -50,7 +51,7 @@ export const departmentService = {
   },
 
   update: async (id: string, payload: Partial<DepartmentResponse>): Promise<DepartmentResponse> => {
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -60,7 +61,7 @@ export const departmentService = {
   },
 
   delete: async (id: string): Promise<void> => {
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}`, {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error(`Failed to delete Department ${id}`);

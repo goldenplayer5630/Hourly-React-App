@@ -1,3 +1,4 @@
+// components/Dashboard/DashboardYearlyHoursLineChart.tsx
 import * as React from 'react';
 import {
   Card,
@@ -17,15 +18,18 @@ import {
   YAxis,
   Tooltip,
   Legend,
+  ReferenceLine,
 } from 'recharts';
 import { MonthlySummary } from '../../interfaces/Summaries/MonthlySummary';
+import { UserContractResponse } from '../../interfaces/UserContracts/UserContractResponse';
 
 type Props = {
   year: number;
-  data?: MonthlySummary[]; // expects 1..12 items (can be fewer/missing months)
+  data?: MonthlySummary[];                // 1..12 items (can be fewer)
   loading?: boolean;
   title?: string;
   onMonthClick?: (month: number) => void;
+  selectedUserContract?: UserContractResponse;
 };
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -47,8 +51,8 @@ const normalizeMonthlySeries = (src?: MonthlySummary[]) => {
     result.push(
       found ?? {
         month: m,
-        year: 0, // Default year value
-        userContractId: '', // Default userContractId value
+        year: 0,
+        userContractId: '',
         totalRawEffectiveHours: 0,
         totalNetEffectiveHours: 0,
         totalTVTHoursAccrued: 0,
@@ -65,7 +69,11 @@ const DashboardYearlyHoursLineChart: React.FC<Props> = ({
   loading,
   title = 'Monthly Hours (Raw vs. Net)',
   onMonthClick,
+  selectedUserContract,
 }) => {
+  const minHoursPerMonth = selectedUserContract?.minimumHoursPerMonth;
+  const maxHoursPerMonth = selectedUserContract?.maximumHoursPerMonth;
+
   const series = React.useMemo(
     () =>
       normalizeMonthlySeries(data).map((x) => ({
@@ -78,6 +86,18 @@ const DashboardYearlyHoursLineChart: React.FC<Props> = ({
   const hasData = series.some(
     s => s.totalRawEffectiveHours > 0 || s.totalNetEffectiveHours > 0
   );
+
+  // Compute a Y-axis max that always includes thresholds
+  const yMaxData = Math.max(
+    0,
+    ...series.map(s => s.totalRawEffectiveHours ?? 0),
+    ...series.map(s => s.totalNetEffectiveHours ?? 0),
+    (minHoursPerMonth ?? 0),
+    (maxHoursPerMonth ?? 0),
+  );
+
+  // Add a little headroom
+  const yMax = yMaxData > 0 ? Math.ceil(yMaxData * 1.1) : 1;
 
   return (
     <Card variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
@@ -96,13 +116,12 @@ const DashboardYearlyHoursLineChart: React.FC<Props> = ({
           </Typography>
         )}
 
-        {!loading && hasData && (
+        {!loading && (hasData || minHoursPerMonth || maxHoursPerMonth) && (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={series}
               margin={{ top: 8, right: 16, bottom: 8, left: 0 }}
               onClick={(e: any) => {
-                // Recharts passes the active payload; pick month if available
                 const m = e?.activePayload?.[0]?.payload?.month as number | undefined;
                 if (m && onMonthClick) onMonthClick(m);
               }}
@@ -112,6 +131,7 @@ const DashboardYearlyHoursLineChart: React.FC<Props> = ({
               <YAxis
                 tickMargin={6}
                 width={65}
+                domain={[0, yMax]}
                 tickFormatter={(v) => `${Math.round(v)}h`}
               />
               <Tooltip
@@ -125,6 +145,37 @@ const DashboardYearlyHoursLineChart: React.FC<Props> = ({
                 }}
               />
               <Legend />
+
+              {/* Threshold lines */}
+              {typeof minHoursPerMonth === 'number' && (
+                <ReferenceLine
+                  y={minHoursPerMonth}
+                  stroke="#f57c00"           // warning.main-ish
+                  strokeDasharray="6 4"
+                  label={{
+                    value: `Min: ${minHoursPerMonth}h`,
+                    position: 'right',
+                    fill: '#f57c00',
+                    fontSize: 12,
+                  }}
+                />
+              )}
+
+              {typeof maxHoursPerMonth === 'number' && (
+                <ReferenceLine
+                  y={maxHoursPerMonth}
+                  stroke="#1976d2"           // primary.main-ish
+                  strokeDasharray="6 4"
+                  label={{
+                    value: `Max: ${maxHoursPerMonth}h`,
+                    position: 'right',
+                    fill: '#1976d2',
+                    fontSize: 12,
+                  }}
+                />
+              )}
+
+              {/* Series */}
               <Line
                 type="monotone"
                 dataKey="totalRawEffectiveHours"
@@ -138,7 +189,7 @@ const DashboardYearlyHoursLineChart: React.FC<Props> = ({
                 type="monotone"
                 dataKey="totalNetEffectiveHours"
                 name="Net hours"
-                stroke="#82ca9d"
+                stroke="#2e7d32"           // success.dark-ish
                 strokeWidth={2}
                 dot={{ r: 2 }}
                 activeDot={{ r: 4 }}

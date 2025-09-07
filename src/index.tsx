@@ -6,17 +6,20 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeContextProvider } from './ThemeContext';
+import { AuthRoot } from './auth/AuthShell';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ThemeContextProvider>
-        <App />
-      </ThemeContextProvider>
-    </BrowserRouter>
+    <AuthRoot>
+      <BrowserRouter>
+        <ThemeContextProvider>
+          <App />
+        </ThemeContextProvider>
+      </BrowserRouter>
+    </AuthRoot>
   </React.StrictMode>
 );
 

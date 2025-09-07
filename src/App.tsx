@@ -8,6 +8,8 @@ import ProfilePage from './pages/profile';
 import GitProjectsPage from './pages/git-projects';
 import SettingsPage from './pages/settings';
 import UserContractsPage from './pages/user-contracts';
+import RequireAuth from './auth/RequireAuth';
+import Bootstrapper from './auth/Bootstrapper';
 
 const App: React.FC = () => {
   return (
@@ -17,16 +19,52 @@ const App: React.FC = () => {
         <Link to="/work-sessions" className="text-blue-600 hover:underline">Work Sessions</Link>
       </nav>
 
+      <Bootstrapper />
+      
       <Routes>
-      <Route element={<DefaultLayout />}>
-        <Route path="/" element={<DashboardPage />} />
-        <Route path="/git-projects" element={<GitProjectsPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/work-sessions" element={<WorkSessionsPage />} />
-        <Route path="/contracts" element={<UserContractsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-      </Route>
-    </Routes>
+        <Route element={<DefaultLayout />}>
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <DashboardPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/work-sessions"
+            element={
+              <RequireAuth>
+                <WorkSessionsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/contracts"
+            element={
+              <RequireAuth>
+                <UserContractsPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <RequireAuth>
+                <SettingsPage />
+              </RequireAuth>
+            }
+          />
+        </Route>
+      </Routes>
     </div>
   );
 };

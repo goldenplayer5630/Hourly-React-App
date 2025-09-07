@@ -18,7 +18,6 @@ import { NavItem } from '../classes/NavItem';
 const navItems = [
   new NavItem('Dashboard', '/', <DashboardIcon />),
   new NavItem('Work Sessions', '/work-sessions', <TimerIcon />),
-  new NavItem('Git Projects', '/git-projects', <GitHubIcon />),
   new NavItem('Contracts', '/contracts', <DocumentIcon />),
   new NavItem('Settings', '/settings', <SettingsIcon />),
 ];

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { GitCommitResponse } from '../interfaces/GitCommits/GitCommitResponse';
 import { API_BASE } from '../config';
+import { authorizedFetch } from '../auth/authorizedFetch';
 
 if (!API_BASE) {
   throw new Error('REACT_APP_API_BASE_URL is not defined');
@@ -10,7 +11,7 @@ const endpoint = `${API_BASE}/api/gitcommit`;
 
 export const gitCommitService = {
   getAll: async (): Promise<GitCommitResponse[]> => {
-    const res = await fetch(endpoint);
+    const res = await authorizedFetch(endpoint);
     if (!res.ok) throw new Error('Failed to fetch GitCommits');
     return res.json();
   },
@@ -26,19 +27,19 @@ export const gitCommitService = {
     if (authorId) params.append('AuthorId', authorId);
     if (authoredDate) params.append('AuthoredDate', authoredDate.toString());
   
-    const res = await fetch(`${endpoint}/Filter?${params.toString()}`);
+    const res = await authorizedFetch(`${endpoint}/Filter?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to filter GitCommits');
     return res.json();
   },  
 
   getById: async (id: string): Promise<GitCommitResponse> => {
-    const res = await fetch(`${endpoint}/${id}`);
+    const res = await authorizedFetch(`${endpoint}/${id}`);
     if (!res.ok) throw new Error(`GitCommit ${id} not found`);
     return res.json();
   },
 
   create: async (payload: Partial<GitCommitResponse>): Promise<GitCommitResponse> => {
-    const res = await fetch(endpoint, {
+    const res = await authorizedFetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -48,7 +49,7 @@ export const gitCommitService = {
   },
 
   update: async (id: string, payload: Partial<GitCommitResponse>): Promise<GitCommitResponse> => {
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -58,7 +59,7 @@ export const gitCommitService = {
   },
 
   delete: async (id: string): Promise<void> => {
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}`, {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error(`Failed to delete GitCommit ${id}`);

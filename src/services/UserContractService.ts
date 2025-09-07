@@ -1,6 +1,7 @@
 import { CreateUserContract } from "../interfaces/UserContracts/CreateUserContract";
 import { UserContractResponse } from "../interfaces/UserContracts/UserContractResponse";
 import { API_BASE } from '../config';
+import { authorizedFetch } from "../auth/authorizedFetch";
 
 if (!API_BASE) {
   throw new Error('REACT_APP_API_BASE_URL is not defined');
@@ -11,7 +12,7 @@ const endpoint = `${API_BASE}/api/usercontract`;
 export const userContractService = {
 
   getAll: async (): Promise<UserContractResponse[]> => {
-    const res = await fetch(endpoint);
+    const res = await authorizedFetch(endpoint);
     if (!res.ok) throw new Error('Failed to fetch work sessions');
     return res.json();
   },
@@ -27,32 +28,32 @@ export const userContractService = {
     if (year !== undefined) params.append('year', year.toString());
     if (month !== undefined) params.append('month', month.toString());
   
-    const res = await fetch(`${endpoint}/Filter?${params.toString()}`);
+    const res = await authorizedFetch(`${endpoint}/Filter?${params.toString()}`);
     console.log(`${endpoint}/Filter?${params.toString()}`);
     if (!res.ok) throw new Error('Failed to filter user contracts');
     return res.json();
   },  
 
   getById: async (id: string): Promise<UserContractResponse> => {
-    const res = await fetch(`${endpoint}/${id}`);
+    const res = await authorizedFetch(`${endpoint}/${id}`);
     if (!res.ok) throw new Error(`Work session ${id} not found`);
     return res.json();
   },
 
   getMonthlySummary: async (userContractId: string, year: number, month: number): Promise<any> => {
-    const res = await fetch(`${endpoint}/${userContractId}/MonthlySummary?year=${year}&month=${month}`);
+    const res = await authorizedFetch(`${endpoint}/${userContractId}/MonthlySummary?year=${year}&month=${month}`);
     if (!res.ok) throw new Error(`Failed to fetch monthly summary for contract ${userContractId}`);
     return res.json();
   },
 
   getYearlySummary: async (userContractId: string, year: number): Promise<any> => {
-    const res = await fetch(`${endpoint}/${userContractId}/YearlySummary?year=${year}`);
+    const res = await authorizedFetch(`${endpoint}/${userContractId}/YearlySummary?year=${year}`);
     if (!res.ok) throw new Error(`Failed to fetch yearly summary for contract ${userContractId}`);
     return res.json();
   },
 
   create: async (payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
-    const res = await fetch(endpoint, {
+    const res = await authorizedFetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -85,7 +86,7 @@ export const userContractService = {
   },
 
   update: async (id: string, payload: Partial<CreateUserContract>): Promise<UserContractResponse> => {
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -117,7 +118,7 @@ export const userContractService = {
   },
 
   lockMonth: async (id: string, year: number, month: number): Promise<UserContractResponse> => {
-    const res = await fetch(`${endpoint}/${id}/LockMonth/?year=${year}&month=${month}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}/LockMonth/?year=${year}&month=${month}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: null,
@@ -149,7 +150,7 @@ export const userContractService = {
   },
 
   unlockMonth: async (id: string, year: number, month: number): Promise<UserContractResponse> => {
-    const res = await fetch(`${endpoint}/${id}/UnlockMonth?year=${year}&month=${month}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}/UnlockMonth?year=${year}&month=${month}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: null,
@@ -181,7 +182,7 @@ export const userContractService = {
   },
 
   delete: async (id: string): Promise<void> => {
-    const res = await fetch(`${endpoint}/${id}`, {
+    const res = await authorizedFetch(`${endpoint}/${id}`, {
       method: 'DELETE',
     });
     if (!res.ok) throw new Error(`Failed to delete work session ${id}`);

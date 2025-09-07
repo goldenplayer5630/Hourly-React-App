@@ -1,0 +1,21 @@
+
+
+import { RoleResponse } from '../Roles/RoleResponse';
+import { DepartmentResponse } from '../Departments/DepartmentResponse';
+import { GitCommitResponse } from '../GitCommits/GitCommitResponse';
+import { UserContractResponse } from '../UserContracts/UserContractResponse';
+
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+
+  roleId?: string | null;
+  role?: RoleResponse | null;
+
+  departmentId?: string | null;
+  department?: DepartmentResponse | null;
+
+  gitEmail?: string | null;
+  gitUsername?: string | null;
+  gitAccessToken?: string | null;
+}
